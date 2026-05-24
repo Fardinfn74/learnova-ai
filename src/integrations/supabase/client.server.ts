@@ -5,8 +5,13 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/types';
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const env = typeof process !== 'undefined' ? process.env : (globalThis as any).process?.env || {};
+
+  const rawUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
+  const rawKey = env.SUPABASE_SERVICE_ROLE_KEY;
+
+  const SUPABASE_URL = rawUrl === 'undefined' ? undefined : rawUrl;
+  const SUPABASE_SERVICE_ROLE_KEY = rawKey === 'undefined' ? undefined : rawKey;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     const missing = [

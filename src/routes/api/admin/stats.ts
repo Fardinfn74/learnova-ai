@@ -6,11 +6,16 @@ export const Route = createFileRoute("/api/admin/stats")({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        const env = typeof process !== 'undefined' ? process.env : (globalThis as any).process?.env || {};
+
         // We use the anon key here to get public stats.
         // For a real app, this should either be protected by an admin check
         // or just use the service role key. We'll just use the public anon key.
-        const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
-        const SUPABASE_ANON = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+        const rawUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || "";
+        const rawKey = env.SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+
+        const SUPABASE_URL = rawUrl === 'undefined' ? "" : rawUrl;
+        const SUPABASE_ANON = rawKey === 'undefined' ? "" : rawKey;
         
         if (!SUPABASE_URL || !SUPABASE_ANON) {
           return new Response(JSON.stringify({ error: "Server not configured" }), { status: 500, headers: { "Content-Type": "application/json" } });

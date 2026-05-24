@@ -30,26 +30,11 @@ export default defineConfig(({ command }) => ({
   plugins: [
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tailwindcss(),
-    tanstackStart({
-      server: { entry: "src/server.ts" },
-    }),
-    // Direct, isolated compilation setup for Vercel Serverless Architecture
+    tanstackStart(),
     ...(command === "build"
       ? [
           nitro({
             preset: "vercel",
-            inline: [
-              "tslib",
-              "@supabase/supabase-js",
-              "@supabase/auth-js",
-              "@supabase/postgrest-js",
-              "@supabase/functions-js",
-              "@supabase/storage-js",
-              "@supabase/realtime-js"
-            ],
-            externals: {
-              trace: false, // Disables complex tree-shaking that strips sub-dependencies
-            },
           }),
         ]
       : []),
