@@ -67,22 +67,6 @@ Built natively for English, Bangla, and Banglish, LEARNOVA adapts to your profic
 
 6. Open your browser and navigate to `http://localhost:8080`.
 
-## 🌐 Deployment (Vercel)
-
-LEARNOVA uses TanStack Start with the **Nitro Vercel preset** (see `vite.config.ts`). Production builds emit `.vercel/output` for Vercel's Build Output API.
-
-1. Push your code to GitHub.
-2. Import the repository in the [Vercel Dashboard](https://vercel.com/new).
-3. Set the framework preset to **TanStack Start** (or let Vercel auto-detect).
-4. Add environment variables (Project → Settings → Environment Variables):
-   - `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`
-   - `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (same values as above)
-   - `GEMINI_API_KEY`, `GROQ_API_KEY` (server-only; comma-separated for key pools; never `VITE_` prefix)
-   - `AI_PREFER_GROQ` (optional, default `true`)
-5. Run the SQL in `20260518185007_*.sql` and `supabase_init.sql` in your Supabase SQL editor.
-6. Click **Deploy**.
-
-For local production preview after `npm run build`: `npm run start` (Node) or `npx vite preview`.
 
 ## 🏆 Hackathon Submission
 
