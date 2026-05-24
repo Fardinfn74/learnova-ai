@@ -23,6 +23,7 @@ export default defineConfig(({ command }) => ({
     host: "::",
     port: 8080,
   },
+  // Tells Vite's development/SSR system to keep tslib bundle safe
   ssr: {
     noExternal: ["tslib", "@supabase/auth-js", "@supabase/supabase-js"],
   },
@@ -39,6 +40,7 @@ export default defineConfig(({ command }) => ({
         },
       },
     }),
+    // Explicitly targets Nitro engine to inline the modules into the final serverless package
     ...(command === "build"
       ? [
           nitro({
