@@ -1497,7 +1497,7 @@ async function getVercelRequestId() {
   var _a9;
   return (_a9 = distExports.getContext().headers) == null ? void 0 : _a9["x-vercel-id"];
 }
-var VERSION = "3.0.116";
+var VERSION = "3.0.120";
 var AI_GATEWAY_PROTOCOL_VERSION = "0.0.1";
 function createGatewayProvider(options = {}) {
   var _a9, _b9;

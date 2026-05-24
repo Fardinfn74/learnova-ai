@@ -1118,43 +1118,6 @@ function encodePathParam(value, decoder) {
 function isNotFound(obj) {
   return obj?.isNotFound === true;
 }
-function getSafeSessionStorage() {
-  try {
-    return typeof window !== "undefined" && typeof window.sessionStorage === "object" ? window.sessionStorage : void 0;
-  } catch {
-    return;
-  }
-}
-const storageKey = "tsr-scroll-restoration-v1_3";
-function createScrollRestorationCache() {
-  const safeSessionStorage = getSafeSessionStorage();
-  if (!safeSessionStorage) return null;
-  let state = {};
-  try {
-    const parsed = JSON.parse(safeSessionStorage.getItem("tsr-scroll-restoration-v1_3") || "{}");
-    if (isPlainObject(parsed)) state = parsed;
-  } catch {
-  }
-  const persist = () => {
-    try {
-      safeSessionStorage.setItem(storageKey, JSON.stringify(state));
-    } catch {
-    }
-  };
-  return {
-    get state() {
-      return state;
-    },
-    set: (updater) => {
-      state = functionalUpdate(updater, state) || state;
-    },
-    persist
-  };
-}
-createScrollRestorationCache();
-const defaultGetScrollRestorationKey = (location) => {
-  return location.state.__TSR_key || location.href;
-};
 function encode(obj, stringify = String) {
   const result = new URLSearchParams();
   for (const key in obj) {
@@ -1241,194 +1204,6 @@ function isResolvedRedirect(obj) {
 }
 function parseRedirect(obj) {
   if (obj !== null && typeof obj === "object" && obj.isSerializedRedirect) return redirect(obj);
-}
-function composeRewrites(rewrites) {
-  return {
-    input: ({ url }) => {
-      for (const rewrite of rewrites) url = executeRewriteInput(rewrite, url);
-      return url;
-    },
-    output: ({ url }) => {
-      for (let i = rewrites.length - 1; i >= 0; i--) url = executeRewriteOutput(rewrites[i], url);
-      return url;
-    }
-  };
-}
-function rewriteBasepath(opts) {
-  const trimmedBasepath = trimPath(opts.basepath);
-  const normalizedBasepath = `/${trimmedBasepath}`;
-  const normalizedBasepathWithSlash = `${normalizedBasepath}/`;
-  const checkBasepath = opts.caseSensitive ? normalizedBasepath : normalizedBasepath.toLowerCase();
-  const checkBasepathWithSlash = opts.caseSensitive ? normalizedBasepathWithSlash : normalizedBasepathWithSlash.toLowerCase();
-  return {
-    input: ({ url }) => {
-      const pathname = opts.caseSensitive ? url.pathname : url.pathname.toLowerCase();
-      if (pathname === checkBasepath) url.pathname = "/";
-      else if (pathname.startsWith(checkBasepathWithSlash)) url.pathname = url.pathname.slice(normalizedBasepath.length);
-      return url;
-    },
-    output: ({ url }) => {
-      url.pathname = joinPaths([
-        "/",
-        trimmedBasepath,
-        url.pathname
-      ]);
-      return url;
-    }
-  };
-}
-function executeRewriteInput(rewrite, url) {
-  const res = rewrite?.input?.({ url });
-  if (res) {
-    if (typeof res === "string") return new URL(res);
-    else if (res instanceof URL) return res;
-  }
-  return url;
-}
-function executeRewriteOutput(rewrite, url) {
-  const res = rewrite?.output?.({ url });
-  if (res) {
-    if (typeof res === "string") return new URL(res);
-    else if (res instanceof URL) return res;
-  }
-  return url;
-}
-function createNonReactiveMutableStore(initialValue) {
-  let value = initialValue;
-  return {
-    get() {
-      return value;
-    },
-    set(nextOrUpdater) {
-      value = functionalUpdate(nextOrUpdater, value);
-    }
-  };
-}
-function createNonReactiveReadonlyStore(read) {
-  return { get() {
-    return read();
-  } };
-}
-function createRouterStores(initialState, config) {
-  const { createMutableStore, createReadonlyStore, batch, init } = config;
-  const matchStores = /* @__PURE__ */ new Map();
-  const pendingMatchStores = /* @__PURE__ */ new Map();
-  const cachedMatchStores = /* @__PURE__ */ new Map();
-  const status = createMutableStore(initialState.status);
-  const loadedAt = createMutableStore(initialState.loadedAt);
-  const isLoading = createMutableStore(initialState.isLoading);
-  const isTransitioning = createMutableStore(initialState.isTransitioning);
-  const location = createMutableStore(initialState.location);
-  const resolvedLocation = createMutableStore(initialState.resolvedLocation);
-  const statusCode = createMutableStore(initialState.statusCode);
-  const redirect2 = createMutableStore(initialState.redirect);
-  const matchesId = createMutableStore([]);
-  const pendingIds = createMutableStore([]);
-  const cachedIds = createMutableStore([]);
-  const matches = createReadonlyStore(() => readPoolMatches(matchStores, matchesId.get()));
-  const pendingMatches = createReadonlyStore(() => readPoolMatches(pendingMatchStores, pendingIds.get()));
-  const cachedMatches = createReadonlyStore(() => readPoolMatches(cachedMatchStores, cachedIds.get()));
-  const firstId = createReadonlyStore(() => matchesId.get()[0]);
-  const hasPending = createReadonlyStore(() => matchesId.get().some((matchId) => {
-    return matchStores.get(matchId)?.get().status === "pending";
-  }));
-  const matchRouteDeps = createReadonlyStore(() => ({
-    locationHref: location.get().href,
-    resolvedLocationHref: resolvedLocation.get()?.href,
-    status: status.get()
-  }));
-  const __store = createReadonlyStore(() => ({
-    status: status.get(),
-    loadedAt: loadedAt.get(),
-    isLoading: isLoading.get(),
-    isTransitioning: isTransitioning.get(),
-    matches: matches.get(),
-    location: location.get(),
-    resolvedLocation: resolvedLocation.get(),
-    statusCode: statusCode.get(),
-    redirect: redirect2.get()
-  }));
-  const matchStoreByRouteIdCache = createLRUCache(64);
-  function getRouteMatchStore(routeId) {
-    let cached = matchStoreByRouteIdCache.get(routeId);
-    if (!cached) {
-      cached = createReadonlyStore(() => {
-        const ids = matchesId.get();
-        for (const id of ids) {
-          const matchStore = matchStores.get(id);
-          if (matchStore && matchStore.routeId === routeId) return matchStore.get();
-        }
-      });
-      matchStoreByRouteIdCache.set(routeId, cached);
-    }
-    return cached;
-  }
-  const store = {
-    status,
-    loadedAt,
-    isLoading,
-    isTransitioning,
-    location,
-    resolvedLocation,
-    statusCode,
-    redirect: redirect2,
-    matchesId,
-    pendingIds,
-    cachedIds,
-    matches,
-    pendingMatches,
-    cachedMatches,
-    firstId,
-    hasPending,
-    matchRouteDeps,
-    matchStores,
-    pendingMatchStores,
-    cachedMatchStores,
-    __store,
-    getRouteMatchStore,
-    setMatches,
-    setPending,
-    setCached
-  };
-  setMatches(initialState.matches);
-  init?.(store);
-  function setMatches(nextMatches) {
-    reconcileMatchPool(nextMatches, matchStores, matchesId, createMutableStore, batch);
-  }
-  function setPending(nextMatches) {
-    reconcileMatchPool(nextMatches, pendingMatchStores, pendingIds, createMutableStore, batch);
-  }
-  function setCached(nextMatches) {
-    reconcileMatchPool(nextMatches, cachedMatchStores, cachedIds, createMutableStore, batch);
-  }
-  return store;
-}
-function readPoolMatches(pool, ids) {
-  const matches = [];
-  for (const id of ids) {
-    const matchStore = pool.get(id);
-    if (matchStore) matches.push(matchStore.get());
-  }
-  return matches;
-}
-function reconcileMatchPool(nextMatches, pool, idStore, createMutableStore, batch) {
-  const nextIds = nextMatches.map((d) => d.id);
-  const nextIdSet = new Set(nextIds);
-  batch(() => {
-    for (const id of pool.keys()) if (!nextIdSet.has(id)) pool.delete(id);
-    for (const nextMatch of nextMatches) {
-      const existing = pool.get(nextMatch.id);
-      if (!existing) {
-        const matchStore = createMutableStore(nextMatch);
-        matchStore.routeId = nextMatch.routeId;
-        pool.set(nextMatch.id, matchStore);
-        continue;
-      }
-      existing.routeId = nextMatch.routeId;
-      if (existing.get() !== nextMatch) existing.set(nextMatch);
-    }
-    if (!arraysEqual(idStore.get(), nextIds)) idStore.set(nextIds);
-  });
 }
 const triggerOnReady = (inner) => {
   if (!inner.rendered) {
@@ -2065,6 +1840,193 @@ const componentTypes = [
   "pendingComponent",
   "notFoundComponent"
 ];
+function composeRewrites(rewrites) {
+  return {
+    input: ({ url }) => {
+      for (const rewrite of rewrites) url = executeRewriteInput(rewrite, url);
+      return url;
+    },
+    output: ({ url }) => {
+      for (let i = rewrites.length - 1; i >= 0; i--) url = executeRewriteOutput(rewrites[i], url);
+      return url;
+    }
+  };
+}
+function rewriteBasepath(opts) {
+  const trimmedBasepath = trimPath(opts.basepath);
+  const normalizedBasepath = `/${trimmedBasepath}`;
+  const checkBasepath = opts.caseSensitive ? normalizedBasepath : normalizedBasepath.toLowerCase();
+  const checkBasepathWithSlash = `${checkBasepath}/`;
+  return {
+    input: ({ url }) => {
+      const pathname = opts.caseSensitive ? url.pathname : url.pathname.toLowerCase();
+      if (pathname === checkBasepath) url.pathname = "/";
+      else if (pathname.startsWith(checkBasepathWithSlash)) url.pathname = url.pathname.slice(normalizedBasepath.length);
+      return url;
+    },
+    output: ({ url }) => {
+      url.pathname = joinPaths([
+        "/",
+        trimmedBasepath,
+        url.pathname
+      ]);
+      return url;
+    }
+  };
+}
+function executeRewriteInput(rewrite, url) {
+  const res = rewrite?.input?.({ url });
+  if (res) {
+    if (typeof res === "string") return new URL(res);
+    else if (res instanceof URL) return res;
+  }
+  return url;
+}
+function executeRewriteOutput(rewrite, url) {
+  const res = rewrite?.output?.({ url });
+  if (res) {
+    if (typeof res === "string") return new URL(res);
+    else if (res instanceof URL) return res;
+  }
+  return url;
+}
+function createNonReactiveMutableStore(initialValue) {
+  let value = initialValue;
+  return {
+    get() {
+      return value;
+    },
+    set(nextOrUpdater) {
+      value = functionalUpdate(nextOrUpdater, value);
+    }
+  };
+}
+function createNonReactiveReadonlyStore(read) {
+  return { get() {
+    return read();
+  } };
+}
+function createRouterStores(initialState, config) {
+  const { createMutableStore, createReadonlyStore, batch, init } = config;
+  const matchStores = /* @__PURE__ */ new Map();
+  const pendingMatchStores = /* @__PURE__ */ new Map();
+  const cachedMatchStores = /* @__PURE__ */ new Map();
+  const status = createMutableStore(initialState.status);
+  const loadedAt = createMutableStore(initialState.loadedAt);
+  const isLoading = createMutableStore(initialState.isLoading);
+  const isTransitioning = createMutableStore(initialState.isTransitioning);
+  const location = createMutableStore(initialState.location);
+  const resolvedLocation = createMutableStore(initialState.resolvedLocation);
+  const statusCode = createMutableStore(initialState.statusCode);
+  const redirect2 = createMutableStore(initialState.redirect);
+  const matchesId = createMutableStore([]);
+  const pendingIds = createMutableStore([]);
+  const cachedIds = createMutableStore([]);
+  const matches = createReadonlyStore(() => readPoolMatches(matchStores, matchesId.get()));
+  const pendingMatches = createReadonlyStore(() => readPoolMatches(pendingMatchStores, pendingIds.get()));
+  const cachedMatches = createReadonlyStore(() => readPoolMatches(cachedMatchStores, cachedIds.get()));
+  const firstId = createReadonlyStore(() => matchesId.get()[0]);
+  const hasPending = createReadonlyStore(() => matchesId.get().some((matchId) => {
+    return matchStores.get(matchId)?.get().status === "pending";
+  }));
+  const matchRouteDeps = createReadonlyStore(() => ({
+    locationHref: location.get().href,
+    resolvedLocationHref: resolvedLocation.get()?.href,
+    status: status.get()
+  }));
+  const __store = createReadonlyStore(() => ({
+    status: status.get(),
+    loadedAt: loadedAt.get(),
+    isLoading: isLoading.get(),
+    isTransitioning: isTransitioning.get(),
+    matches: matches.get(),
+    location: location.get(),
+    resolvedLocation: resolvedLocation.get(),
+    statusCode: statusCode.get(),
+    redirect: redirect2.get()
+  }));
+  const matchStoreByRouteIdCache = createLRUCache(64);
+  function getRouteMatchStore(routeId) {
+    let cached = matchStoreByRouteIdCache.get(routeId);
+    if (!cached) {
+      cached = createReadonlyStore(() => {
+        const ids = matchesId.get();
+        for (const id of ids) {
+          const matchStore = matchStores.get(id);
+          if (matchStore && matchStore.routeId === routeId) return matchStore.get();
+        }
+      });
+      matchStoreByRouteIdCache.set(routeId, cached);
+    }
+    return cached;
+  }
+  const store = {
+    status,
+    loadedAt,
+    isLoading,
+    isTransitioning,
+    location,
+    resolvedLocation,
+    statusCode,
+    redirect: redirect2,
+    matchesId,
+    pendingIds,
+    cachedIds,
+    matches,
+    pendingMatches,
+    cachedMatches,
+    firstId,
+    hasPending,
+    matchRouteDeps,
+    matchStores,
+    pendingMatchStores,
+    cachedMatchStores,
+    __store,
+    getRouteMatchStore,
+    setMatches,
+    setPending,
+    setCached
+  };
+  setMatches(initialState.matches);
+  init?.(store);
+  function setMatches(nextMatches) {
+    reconcileMatchPool(nextMatches, matchStores, matchesId, createMutableStore, batch);
+  }
+  function setPending(nextMatches) {
+    reconcileMatchPool(nextMatches, pendingMatchStores, pendingIds, createMutableStore, batch);
+  }
+  function setCached(nextMatches) {
+    reconcileMatchPool(nextMatches, cachedMatchStores, cachedIds, createMutableStore, batch);
+  }
+  return store;
+}
+function readPoolMatches(pool, ids) {
+  const matches = [];
+  for (const id of ids) {
+    const matchStore = pool.get(id);
+    if (matchStore) matches.push(matchStore.get());
+  }
+  return matches;
+}
+function reconcileMatchPool(nextMatches, pool, idStore, createMutableStore, batch) {
+  const nextIds = nextMatches.map((d) => d.id);
+  const nextIdSet = new Set(nextIds);
+  batch(() => {
+    for (const id of pool.keys()) if (!nextIdSet.has(id)) pool.delete(id);
+    for (const nextMatch of nextMatches) {
+      const existing = pool.get(nextMatch.id);
+      if (!existing) {
+        const matchStore = createMutableStore(nextMatch);
+        matchStore.routeId = nextMatch.routeId;
+        pool.set(nextMatch.id, matchStore);
+        continue;
+      }
+      existing.routeId = nextMatch.routeId;
+      if (existing.get() !== nextMatch) existing.set(nextMatch);
+    }
+    if (!arraysEqual(idStore.get(), nextIds)) idStore.set(nextIds);
+  });
+}
 function getLocationChangeInfo(location, resolvedLocation) {
   const fromLocation = resolvedLocation;
   const toLocation = location;
@@ -2076,6 +2038,7 @@ function getLocationChangeInfo(location, resolvedLocation) {
     hashChanged: fromLocation?.hash !== toLocation.hash
   };
 }
+const locationHistoryActions = /* @__PURE__ */ new WeakMap();
 var RouterCore = class {
   /**
   * @deprecated Use the `createRouter` function instead
@@ -2375,6 +2338,7 @@ var RouterCore = class {
       return buildWithMatches(opts);
     };
     this.commitLocation = async ({ viewTransition, ignoreBlocker, ...next }) => {
+      let historyAction;
       const isSameState = () => {
         const ignoredProps = [
           "key",
@@ -2423,10 +2387,11 @@ var RouterCore = class {
         }
         nextHistory.state.__hashScrollIntoViewOptions = hashScrollIntoView ?? this.options.defaultHashScrollIntoView ?? true;
         this.shouldViewTransition = viewTransition;
-        this.history[next.replace ? "replace" : "push"](nextHistory.publicHref, nextHistory.state, { ignoreBlocker });
+        historyAction = next.replace ? "REPLACE" : "PUSH";
+        this.history[historyAction === "REPLACE" ? "replace" : "push"](nextHistory.publicHref, nextHistory.state, { ignoreBlocker });
       }
       this.resetNextScroll = next.resetScroll ?? true;
-      if (!this.history.subscribers.size) this.load();
+      if (!this.history.subscribers.size) this.load(historyAction ? { action: { type: historyAction } } : void 0);
       return this.commitLocationPromise;
     };
     this.buildAndCommitLocation = ({ replace, resetScroll, hashScrollIntoView, viewTransition, ignoreBlocker, href, ...rest } = {}) => {
@@ -2531,6 +2496,7 @@ var RouterCore = class {
       });
     };
     this.load = async (opts) => {
+      const historyAction = opts?.action?.type;
       let redirect2;
       let notFound;
       let loadPromise;
@@ -2539,6 +2505,8 @@ var RouterCore = class {
         this.startTransition(async () => {
           try {
             this.beforeLoad();
+            if (historyAction) locationHistoryActions.set(this.latestLocation, historyAction);
+            else locationHistoryActions.delete(this.latestLocation);
             const next = this.latestLocation;
             const locationChangeInfo = getLocationChangeInfo(next, this.stores.resolvedLocation.get());
             if (!this.stores.redirect.get()) this.emit({
@@ -3142,10 +3110,37 @@ function extractStrictParams(route, accumulatedParams) {
     Object.assign(accumulatedParams, result);
   }
 }
+function getSafeSessionStorage() {
+  try {
+    return sessionStorage;
+  } catch {
+    return;
+  }
+}
+const storageKey = "tsr-scroll-restoration-v1_3";
+getSafeSessionStorage();
+const defaultGetScrollRestorationKey = (location) => {
+  return location.state.__TSR_key || location.href;
+};
 function getAssetCrossOrigin(assetCrossOrigin, kind) {
   if (!assetCrossOrigin) return;
   if (typeof assetCrossOrigin === "string") return assetCrossOrigin;
   return assetCrossOrigin[kind];
+}
+function getManifestScriptFormat(manifest) {
+  return manifest?.scriptFormat ?? "module";
+}
+function getScriptPreloadAttrs(manifest, link, assetCrossOrigin) {
+  const preloadLink = resolveManifestAssetLink(link);
+  const crossOrigin = getAssetCrossOrigin(assetCrossOrigin, "script") ?? preloadLink.crossOrigin;
+  return {
+    ...getManifestScriptFormat(manifest) === "iife" ? {
+      rel: "preload",
+      as: "script"
+    } : { rel: "modulepreload" },
+    href: preloadLink.href,
+    ...crossOrigin ? { crossOrigin } : {}
+  };
 }
 function resolveManifestAssetLink(link) {
   if (typeof link === "string") return {
@@ -3154,32 +3149,38 @@ function resolveManifestAssetLink(link) {
   };
   return link;
 }
-function getStylesheetHref(asset) {
-  if (asset.tag !== "link") return void 0;
-  const rel = asset.attrs?.rel;
-  const href = asset.attrs?.href;
-  if (typeof href !== "string") return void 0;
-  if (!(typeof rel === "string" ? rel.split(/\s+/) : []).includes("stylesheet")) return void 0;
-  return href;
+function appendUniqueUserTags(target, tags) {
+  if (tags.length === 0) return;
+  if (tags.length === 1) {
+    target.push(tags[0]);
+    return;
+  }
+  const seen = /* @__PURE__ */ new Set();
+  for (const tag of tags) {
+    const key = JSON.stringify(tag);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    target.push(tag);
+  }
 }
-function isInlinableStylesheet(manifest, asset) {
-  const href = getStylesheetHref(asset);
-  return !!href && manifest?.inlineCss?.styles[href] !== void 0;
+function getStylesheetHref(asset) {
+  return resolveManifestCssLink(asset).href;
+}
+function resolveManifestCssLink(link) {
+  if (typeof link === "string") return {
+    href: link,
+    crossOrigin: void 0
+  };
+  return link;
 }
 function createInlineCssStyleAsset(css) {
   return {
-    tag: "style",
     attrs: { suppressHydrationWarning: true },
-    inlineCss: true,
     children: css
   };
 }
 function createInlineCssPlaceholderAsset() {
-  return {
-    tag: "style",
-    attrs: { suppressHydrationWarning: true },
-    inlineCss: true
-  };
+  return { attrs: { suppressHydrationWarning: true } };
 }
 var BaseRoute = class {
   get to() {
@@ -3670,7 +3671,6 @@ var ScriptBuffer = class {
 };
 const MANIFEST_CACHE_SIZE = 100;
 const manifestCaches = /* @__PURE__ */ new WeakMap();
-const inlineCssCaches = /* @__PURE__ */ new WeakMap();
 function getManifestCache(manifest) {
   const cache = manifestCaches.get(manifest);
   if (cache) return cache;
@@ -3678,82 +3678,141 @@ function getManifestCache(manifest) {
   manifestCaches.set(manifest, newCache);
   return newCache;
 }
-function getInlineCssCache(manifest) {
-  const cache = inlineCssCaches.get(manifest);
-  if (cache) return cache;
-  const newCache = createLRUCache(MANIFEST_CACHE_SIZE);
-  inlineCssCaches.set(manifest, newCache);
-  return newCache;
-}
-function getInlineCssHrefsForMatches(manifest, matches) {
-  const styles = manifest?.inlineCss?.styles;
-  if (!styles) return [];
-  const seen = /* @__PURE__ */ new Set();
-  const hrefs = [];
-  for (const match of matches) {
-    const assets = manifest?.routes[match.routeId]?.assets ?? [];
-    for (const asset of assets) {
-      const href = getStylesheetHref(asset);
-      if (!href || seen.has(href) || styles[href] === void 0) continue;
-      seen.add(href);
-      hrefs.push(href);
-    }
-  }
-  return hrefs;
-}
-function getInlineCssForHrefs(manifest, hrefs) {
+function getInlineCssForPreparedRoutes(manifest, preparedRoutes) {
+  if (preparedRoutes.inlineCss !== void 0) return preparedRoutes.inlineCss;
   const styles = manifest.inlineCss?.styles;
-  if (!styles || hrefs.length === 0) return void 0;
-  const cacheKey = hrefs.join("\0");
-  {
-    const cached = getInlineCssCache(manifest).get(cacheKey);
-    if (cached !== void 0) return cached;
-  }
-  const css = hrefs.map((href) => styles[href]).join("");
-  getInlineCssCache(manifest).set(cacheKey, css);
+  const hrefs = preparedRoutes.inlineCssHrefs;
+  if (!styles || !hrefs?.length) return void 0;
+  let css = "";
+  for (const href of hrefs) css += styles[href];
+  preparedRoutes.inlineCss = css;
   return css;
 }
-function getInlineCssAssetForMatches(manifest, matches) {
-  if (!manifest?.inlineCss) return void 0;
-  const css = getInlineCssForHrefs(manifest, getInlineCssHrefsForMatches(manifest, matches));
+function getInlineCssAssetForPreparedRoutes(manifest, preparedRoutes) {
+  const css = getInlineCssForPreparedRoutes(manifest, preparedRoutes);
   return css === void 0 ? void 0 : createInlineCssStyleAsset(css);
 }
-function stripInlinedStylesheetAssets(manifest, routes, matches) {
-  if (!manifest.inlineCss) return routes;
-  const nextRoutes = {};
-  for (const [routeId, route] of Object.entries(routes)) {
-    const assets = route.assets?.filter((asset) => !isInlinableStylesheet(manifest, asset));
-    const nextRoute = { ...route };
-    if (assets) if (assets.length > 0) nextRoute.assets = assets;
-    else delete nextRoute.assets;
-    nextRoutes[routeId] = nextRoute;
+function getMatchedRoutesCacheKey(matches) {
+  let cacheKey = "";
+  for (let i = 0; i < matches.length; i++) cacheKey += (i === 0 ? "" : "\0") + matches[i].routeId;
+  return cacheKey;
+}
+function getPreparedMatchedManifestRoutes(manifest, matches, cacheKey) {
+  {
+    const cached = getManifestCache(manifest).get(cacheKey);
+    if (cached) return cached;
   }
-  if (getInlineCssAssetForMatches(manifest, matches)) {
-    const rootRoute = nextRoutes["__root__"] ?? {};
-    nextRoutes[rootRouteId] = {
-      ...rootRoute,
-      assets: [createInlineCssPlaceholderAsset(), ...rootRoute.assets ?? []]
+  const preparedRoutes = prepareMatchedManifestRoutes(manifest, matches);
+  getManifestCache(manifest).set(cacheKey, preparedRoutes);
+  return preparedRoutes;
+}
+function prepareMatchedManifestRoutes(manifest, matches) {
+  const inlineStyles = manifest.inlineCss?.styles;
+  const routes = {};
+  if (!inlineStyles) {
+    for (const match of matches) {
+      const route = manifest.routes[match.routeId];
+      if (route) routes[match.routeId] = route;
+    }
+    return {
+      routes,
+      hasStrippedRoutes: false
     };
   }
-  return nextRoutes;
+  const inlineCssHrefs = [];
+  const seenInlineCssHrefs = /* @__PURE__ */ new Set();
+  let hasStrippedRoutes = false;
+  for (const match of matches) {
+    const routeId = match.routeId;
+    const route = manifest.routes[routeId];
+    if (!route) continue;
+    const nextRoute = stripInlinedStylesheetAssetsFromRoute(inlineStyles, route, inlineCssHrefs, seenInlineCssHrefs);
+    if (nextRoute !== route) hasStrippedRoutes = true;
+    routes[routeId] = nextRoute;
+  }
+  return {
+    routes,
+    hasStrippedRoutes,
+    ...inlineCssHrefs.length ? { inlineCssHrefs } : {}
+  };
 }
-function attachRouterServerSsrUtils({ router, manifest, getRequestAssets, includeUnmatchedRouteAssets = true }) {
+function stripInlinedStylesheetAssetsFromRoute(inlineStyles, route, inlineCssHrefs, seenInlineCssHrefs) {
+  const css = route.css;
+  if (!css) return route;
+  if (css.length === 0) {
+    const nextRoute2 = { ...route };
+    delete nextRoute2.css;
+    return nextRoute2;
+  }
+  let cssLinks;
+  for (let i = 0; i < css.length; i++) {
+    const link = css[i];
+    const href = getStylesheetHref(link);
+    if (inlineStyles[href] === void 0) {
+      if (cssLinks) cssLinks.push(link);
+      continue;
+    }
+    if (!seenInlineCssHrefs.has(href)) {
+      seenInlineCssHrefs.add(href);
+      inlineCssHrefs.push(href);
+    }
+    if (!cssLinks) cssLinks = css.slice(0, i);
+  }
+  if (!cssLinks) return route;
+  if (cssLinks.length > 0) return {
+    ...route,
+    css: cssLinks
+  };
+  const nextRoute = { ...route };
+  delete nextRoute.css;
+  return nextRoute;
+}
+function hasRouteAssets(route) {
+  return !!route.scripts?.length || !!route.css?.length;
+}
+function hasRequestAssets(assets) {
+  return !!assets && (!!assets.preloads?.length || hasRouteAssets(assets));
+}
+function mergeRequestAssetsIntoRootRoute(rootRoute, requestAssets) {
+  const preloads = requestAssets?.preloads?.length ? [...requestAssets.preloads, ...rootRoute?.preloads ?? []] : rootRoute?.preloads;
+  const scripts = requestAssets?.scripts?.length ? [...requestAssets.scripts, ...rootRoute?.scripts ?? []] : rootRoute?.scripts;
+  const cssLinks = requestAssets?.css?.length ? [...requestAssets.css, ...rootRoute?.css ?? []] : rootRoute?.css;
+  return {
+    ...rootRoute ?? {},
+    ...preloads?.length ? { preloads } : {},
+    ...scripts?.length ? { scripts } : {},
+    ...cssLinks?.length ? { css: cssLinks } : {}
+  };
+}
+function attachRouterServerSsrUtils({ router, manifest, getRequestAssets }) {
   router.ssr = { get manifest() {
+    if (!manifest) return manifest;
     const requestAssets = getRequestAssets?.();
-    const inlineCssAsset = getInlineCssAssetForMatches(manifest, router.stores.matches.get());
-    if (!requestAssets?.length && !inlineCssAsset) return manifest;
+    const matches = router.stores.matches.get();
+    const hasAssets = hasRequestAssets(requestAssets);
+    if (!hasAssets && !manifest.inlineCss) return manifest;
+    let inlineCssAsset;
+    let routes = manifest.routes;
+    if (manifest.inlineCss) {
+      const preparedManifest = getPreparedMatchedManifestRoutes(manifest, matches, getMatchedRoutesCacheKey(matches));
+      inlineCssAsset = getInlineCssAssetForPreparedRoutes(manifest, preparedManifest);
+      if (preparedManifest.hasStrippedRoutes) routes = {
+        ...manifest.routes,
+        ...preparedManifest.routes
+      };
+    }
+    if (!hasAssets) return {
+      ...manifest.scriptFormat ? { scriptFormat: manifest.scriptFormat } : {},
+      ...inlineCssAsset ? { inlineStyle: inlineCssAsset } : {},
+      routes
+    };
+    const rootRoute = routes[rootRouteId];
     return {
-      ...manifest,
+      ...manifest.scriptFormat ? { scriptFormat: manifest.scriptFormat } : {},
+      ...inlineCssAsset ? { inlineStyle: inlineCssAsset } : {},
       routes: {
-        ...manifest?.routes,
-        [rootRouteId]: {
-          ...manifest?.routes?.[rootRouteId],
-          assets: [
-            ...requestAssets ?? [],
-            ...inlineCssAsset ? [inlineCssAsset] : [],
-            ...manifest?.routes?.["__root__"]?.assets ?? []
-          ]
-        }
+        ...routes,
+        [rootRouteId]: mergeRequestAssetsIntoRootRoute(rootRoute, requestAssets)
       }
     };
   } };
@@ -3783,27 +3842,19 @@ function attachRouterServerSsrUtils({ router, manifest, getRequestAssets, includ
       const matches = matchesToDehydrate.map(dehydrateMatch);
       let manifestToDehydrate = void 0;
       if (manifest) {
-        const currentRouteIdsList = matchesToDehydrate.map((m) => m.routeId);
-        const manifestCacheKey = `${currentRouteIdsList.join("\0")}\0includeUnmatchedRouteAssets=${includeUnmatchedRouteAssets}`;
-        let filteredRoutes;
-        filteredRoutes = getManifestCache(manifest).get(manifestCacheKey);
-        if (!filteredRoutes) {
-          const currentRouteIds = new Set(currentRouteIdsList);
-          const nextFilteredRoutes = {};
-          for (const routeId in manifest.routes) {
-            const routeManifest = manifest.routes[routeId];
-            if (currentRouteIds.has(routeId)) nextFilteredRoutes[routeId] = routeManifest;
-            else if (includeUnmatchedRouteAssets && routeManifest.assets && routeManifest.assets.length > 0) nextFilteredRoutes[routeId] = { assets: routeManifest.assets };
-          }
-          filteredRoutes = stripInlinedStylesheetAssets(manifest, nextFilteredRoutes, matchesToDehydrate);
-          getManifestCache(manifest).set(manifestCacheKey, filteredRoutes);
-        }
-        manifestToDehydrate = { routes: { ...filteredRoutes } };
-        if (opts?.requestAssets?.length) {
+        const cacheKey = getMatchedRoutesCacheKey(matchesToDehydrate);
+        const preparedManifest = getPreparedMatchedManifestRoutes(manifest, matchesToDehydrate, cacheKey);
+        manifestToDehydrate = {
+          ...manifest.scriptFormat ? { scriptFormat: manifest.scriptFormat } : {},
+          ...preparedManifest.inlineCssHrefs ? { inlineStyle: createInlineCssPlaceholderAsset() } : {},
+          routes: preparedManifest.routes
+        };
+        const requestAssets = opts?.requestAssets;
+        if (hasRequestAssets(requestAssets)) {
           const existingRoot = manifestToDehydrate.routes[rootRouteId];
-          manifestToDehydrate.routes[rootRouteId] = {
-            ...existingRoot,
-            assets: [...opts.requestAssets, ...existingRoot?.assets ?? []]
+          manifestToDehydrate.routes = {
+            ...manifestToDehydrate.routes,
+            [rootRouteId]: mergeRequestAssetsIntoRootRoute(existingRoot, requestAssets)
           };
         }
       }
@@ -4233,14 +4284,11 @@ function transformStreamWithRouter(router, appStream, opts) {
   });
   return stream;
 }
-var scroll_restoration_inline_default = 'function(t){let s;try{s=JSON.parse(sessionStorage.getItem(t.storageKey)||"{}")}catch(e){console.error(e);return}const c=t.key||window.history.state?.__TSR_key,r=c?s[c]:void 0;if(t.shouldScrollRestoration&&r&&typeof r=="object"&&Object.keys(r).length>0){for(const e in r){const o=r[e];if(!o||typeof o!="object")continue;const l=o.scrollX,i=o.scrollY;if(!(!Number.isFinite(l)||!Number.isFinite(i))){if(e==="window")window.scrollTo({top:i,left:l,behavior:t.behavior});else if(e){let n;try{n=document.querySelector(e)}catch{continue}n&&(n.scrollLeft=l,n.scrollTop=i)}}}return}const a=window.location.hash.split("#",2)[1];if(a){const e=window.history.state?.__hashScrollIntoViewOptions??!0;if(e){const o=document.getElementById(a);o&&o.scrollIntoView(e)}return}window.scrollTo({top:0,left:0,behavior:t.behavior})}';
-const defaultInlineScrollRestorationScript = `(${scroll_restoration_inline_default})(${escapeHtml(JSON.stringify({
-  storageKey,
-  shouldScrollRestoration: true
-}))})`;
-function getScrollRestorationScript(options) {
-  if (options.storageKey === "tsr-scroll-restoration-v1_3" && options.shouldScrollRestoration === true && options.key === void 0 && options.behavior === void 0) return defaultInlineScrollRestorationScript;
-  return `(${scroll_restoration_inline_default})(${escapeHtml(JSON.stringify(options))})`;
+var scroll_restoration_inline_default = 'function(a,f){let l;try{l=JSON.parse(sessionStorage.getItem(a)||"{}")}catch{return}const n=l?.[f||history.state?.__TSR_key];let c=!1;for(const t in n){const e=n[t],o=e?.scrollX,s=e?.scrollY;if(Number.isFinite(o)&&Number.isFinite(s)){if(t==="window")scrollTo(o,s),c=!0;else if(t)try{const r=document.querySelector(t);r&&(r.scrollLeft=o,r.scrollTop=s)}catch{}}}if(c)return;const i=location.hash.slice(1);if(i){const t=history.state?.__hashScrollIntoViewOptions??!0;if(t){const e=document.getElementById(i);e&&e.scrollIntoView(t)}return}scrollTo(0,0)}';
+const defaultInlineScrollRestorationScript = `(${scroll_restoration_inline_default})(${escapeHtml(JSON.stringify(storageKey))})`;
+function getScrollRestorationScript(key) {
+  if (key === void 0) return defaultInlineScrollRestorationScript;
+  return `(${scroll_restoration_inline_default})(${escapeHtml(JSON.stringify(storageKey))},${escapeHtml(JSON.stringify(key))})`;
 }
 function getScrollRestorationScriptForRouter(router) {
   if (typeof router.options.scrollRestoration === "function" && !router.options.scrollRestoration({ location: router.latestLocation })) return null;
@@ -4249,48 +4297,47 @@ function getScrollRestorationScriptForRouter(router) {
   const location = router.latestLocation;
   const userKey = getKey(location);
   if (userKey === defaultGetScrollRestorationKey(location)) return defaultInlineScrollRestorationScript;
-  return getScrollRestorationScript({
-    storageKey,
-    shouldScrollRestoration: true,
-    key: userKey
-  });
+  return getScrollRestorationScript(userKey);
 }
 export {
-  isServer as A,
+  isRedirect as A,
   BaseRootRoute as B,
-  makeSerovalPlugin as C,
-  mergeHeaders as D,
-  parseRedirect as E,
-  removeTrailingSlash as F,
-  resolveManifestAssetLink as G,
-  rootRouteId as H,
-  transformPipeableStreamWithRouter as I,
-  transformReadableStreamWithRouter as J,
+  isResolvedRedirect as C,
+  isServer as D,
+  makeSerovalPlugin as E,
+  mergeHeaders as F,
+  parseRedirect as G,
+  removeTrailingSlash as H,
+  resolveManifestAssetLink as I,
+  resolveManifestCssLink as J,
+  rootRouteId as K,
+  transformPipeableStreamWithRouter as L,
+  transformReadableStreamWithRouter as M,
   RouterCore as R,
   BaseRoute as a,
-  attachRouterServerSsrUtils as b,
-  createNonReactiveMutableStore as c,
-  createNonReactiveReadonlyStore as d,
-  createRawStreamRPCPlugin as e,
-  createSerializationAdapter as f,
-  deepEqual as g,
-  defaultSerovalPlugins as h,
-  defineHandlerCallback as i,
-  escapeHtml as j,
-  exactPathTest as k,
-  executeRewriteInput as l,
-  functionalUpdate as m,
-  getAssetCrossOrigin as n,
-  getNormalizedURL as o,
-  getOrigin as p,
-  getScrollRestorationScriptForRouter as q,
-  getStylesheetHref as r,
-  hasKeys as s,
-  invariant as t,
-  isDangerousProtocol as u,
-  isInlinableStylesheet as v,
-  isModuleNotFoundError as w,
-  isNotFound as x,
-  isRedirect as y,
-  isResolvedRedirect as z
+  appendUniqueUserTags as b,
+  attachRouterServerSsrUtils as c,
+  createNonReactiveMutableStore as d,
+  createNonReactiveReadonlyStore as e,
+  createRawStreamRPCPlugin as f,
+  createSerializationAdapter as g,
+  deepEqual as h,
+  defaultSerovalPlugins as i,
+  defineHandlerCallback as j,
+  escapeHtml as k,
+  exactPathTest as l,
+  executeRewriteInput as m,
+  functionalUpdate as n,
+  getAssetCrossOrigin as o,
+  getManifestScriptFormat as p,
+  getNormalizedURL as q,
+  getOrigin as r,
+  getScriptPreloadAttrs as s,
+  getScrollRestorationScriptForRouter as t,
+  getStylesheetHref as u,
+  hasKeys as v,
+  invariant as w,
+  isDangerousProtocol as x,
+  isModuleNotFoundError as y,
+  isNotFound as z
 };
