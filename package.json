@@ -95,6 +95,6 @@
   },
   "bundleDependencies": [
     "tslib",
-    "@supabase/supabase-js",
+    "@supabase/supabase-js"
   ]
 }
