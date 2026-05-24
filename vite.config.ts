@@ -23,6 +23,13 @@ export default defineConfig(({ command }) => ({
     host: "::",
     port: 8080,
   },
+  // Force Vite/Nitro to bundle tslib on the server-side instead of leaving it external
+  ssr: {
+    noExternal: ["tslib", "@supabase/auth-js"],
+  },
+  optimizeDeps: {
+    include: ["tslib"],
+  },
   plugins: [
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tailwindcss(),
@@ -36,7 +43,7 @@ export default defineConfig(({ command }) => ({
         },
       },
     }),
-    // Nitro Vercel preset is build-only; enabling it in `vite dev` breaks SSR (503).
+    // Nitro Vercel preset is build-only; enabling it in `vite dev` breaks SSR
     ...(command === "build" ? [nitro({ preset: "vercel" })] : []),
     react(),
   ],
