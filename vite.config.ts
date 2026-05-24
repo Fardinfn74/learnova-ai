@@ -44,7 +44,7 @@ export default defineConfig(({ command }) => ({
     ...(command === "build"
       ? [
           nitro({
-            preset: "netlify",
+            preset: "vercel",
             externals: {
               inline: ["tslib", "@supabase/auth-js", "@supabase/supabase-js"],
             },
