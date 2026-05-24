@@ -165,8 +165,13 @@ function VoicePage() {
       });
       if (!res.ok) throw new Error(await res.text());
       const { reply } = await res.json() as { reply: string };
+
+      // Auto-detect if Nova replied in Bangla script to use correct voice
+      const containsBangla = /[\u0980-\u09FF]/.test(reply);
+      const replyLang = containsBangla ? "bn-BD" : "en-US";
+
       setMessages([...next, { role: "assistant", content: reply }]);
-      speak(reply);
+      speakWithLang(reply, replyLang);
       await award({ data: { amount: 5, reason: "Voice chat with Nova" } });
       qc.invalidateQueries({ queryKey: ["profile"] });
     } catch (e) {
@@ -177,12 +182,31 @@ function VoicePage() {
     }
   }
 
+  function speakWithLang(text: string, voiceLang: string) {
+    if (mutedRef.current || typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = voiceLang;
+    const isBn = voiceLang.startsWith("bn");
+    utt.rate = isBn ? 0.85 : 0.90;
+    utt.pitch = isBn ? 1.0 : 1.18;
+    const voices = window.speechSynthesis.getVoices();
+    const v = pickFemaleVoice(voices, voiceLang);
+    if (v) utt.voice = v;
+    utt.onstart = () => setSpeaking(true);
+    utt.onend = () => setSpeaking(false);
+    utt.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utt);
+  }
+
   function startListening() {
     const sr = recRef.current; if (!sr) return;
     window.speechSynthesis?.cancel();
     finalRef.current = ""; setInterim("");
+
+    // Use the selected lang, but if it's Bangla, some browsers prefer "bn-IN" or just "bn"
     sr.lang = lang;
-    sr.continuous = false;
+    sr.continuous = true; // Changed to true for better recognition
     sr.interimResults = true;
     sr.onresult = (e) => {
       let interimText = ""; let finalText = "";
@@ -199,10 +223,15 @@ function VoicePage() {
       setListening(false);
     };
     sr.onend = () => {
+      console.log("[Voice] recognition ended");
       setListening(false);
       setInterim("");
       const text = finalRef.current.trim();
-      if (text) sendToNova(text);
+      if (text) {
+        sendToNova(text);
+      } else {
+        console.log("[Voice] No speech detected");
+      }
     };
     try { sr.start(); setListening(true); } catch (e) { console.error(e); }
   }
@@ -220,8 +249,8 @@ function VoicePage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="border-b border-border/40 px-6 py-3 flex items-center justify-between backdrop-blur-xl bg-background/60">
+    <div className="h-screen flex flex-col pb-20 md:pb-0">
+      <div className="border-b border-border/40 px-4 md:px-6 py-3 flex items-center justify-between backdrop-blur-xl bg-background/60">
         <div className="flex items-center gap-3">
           <Nova size={40} float={false} glow={false} />
           <div>
@@ -259,7 +288,7 @@ function VoicePage() {
             <div className={cn("absolute -inset-24 rounded-full border border-primary/10 animate-spin-slow",
               !listening && !speaking && "opacity-30")} style={{ animationDirection: "reverse" }} />
             <div className="relative">
-              <Nova size={260} float={!listening && !speaking} />
+              <Nova size={window.innerWidth < 768 ? 180 : 260} float={!listening && !speaking} />
             </div>
           </div>
 

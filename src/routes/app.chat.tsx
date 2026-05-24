@@ -42,8 +42,11 @@ function ChatPage() {
     if (activeId === id) setActiveId(null);
   }
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="h-screen flex">
+    <div className="h-screen flex relative">
+      {/* Sidebar - hidden on mobile, unless explicitly opened if we added that, but currently it's hidden lg:flex */}
       <aside className="hidden lg:flex w-72 flex-col border-r border-border/40 bg-sidebar/40 backdrop-blur-xl p-3">
         <button onClick={newChat} className="flex items-center justify-center gap-2 rounded-xl gradient-hero py-2.5 text-sm font-semibold text-primary-foreground shadow-glow">
           <Plus className="h-4 w-4"/> New chat
@@ -64,27 +67,60 @@ function ChatPage() {
         </div>
       </aside>
 
+      {/* Mobile Drawer Overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}>
+          <div className="w-72 h-full bg-sidebar/95 p-4 shadow-xl border-r border-border/40 animate-in slide-in-from-left duration-200" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold">My Chats</h3>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-1 hover:bg-muted rounded-md"><Plus className="h-5 w-5 rotate-45"/></button>
+            </div>
+            <button onClick={() => { newChat(); setMobileMenuOpen(false); }} className="w-full flex items-center justify-center gap-2 rounded-xl gradient-hero py-2.5 text-sm font-semibold text-primary-foreground shadow-glow mb-4">
+              <Plus className="h-4 w-4"/> New chat
+            </button>
+            <div className="space-y-1 overflow-auto max-h-[calc(100vh-140px)]">
+              {threads?.map(t => (
+                <div key={t.id} className={cn("group flex items-center gap-1 rounded-lg pr-1",
+                  activeId === t.id ? "bg-sidebar-accent" : "hover:bg-sidebar-accent/60")}>
+                  <button onClick={() => { setActiveId(t.id); setMobileMenuOpen(false); }} className="flex-1 text-left px-3 py-2 text-sm truncate">
+                    {t.title}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 min-w-0">
         {activeId ? (
-          <ChatWindow key={activeId} threadId={activeId} getMsgs={getMsgs} save={save} award={award} onNewChat={newChat} />
+          <ChatWindow key={activeId} threadId={activeId} getMsgs={getMsgs} save={save} award={award} onNewChat={newChat} onOpenMenu={() => setMobileMenuOpen(true)} />
         ) : (
-          <EmptyState onNew={newChat} />
+          <EmptyState onNew={newChat} onOpenMenu={() => setMobileMenuOpen(true)} />
         )}
       </div>
     </div>
   );
 }
 
-function EmptyState({ onNew }: { onNew: () => void }) {
+function EmptyState({ onNew, onOpenMenu }: { onNew: () => void; onOpenMenu: () => void }) {
   return (
-    <div className="h-full grid place-items-center p-8">
-      <div className="text-center max-w-md">
-        <Nova size={180} />
-        <h2 className="text-2xl font-bold mt-4">Hi! I'm Nova.</h2>
-        <p className="text-muted-foreground mt-1">Ask me anything — in English, Bangla, or Banglish. I'll explain step-by-step.</p>
-        <button onClick={onNew} className="mt-5 rounded-full gradient-hero px-6 py-3 font-semibold text-primary-foreground shadow-glow">
-          Start a chat
+    <div className="h-full flex flex-col">
+      <div className="lg:hidden border-b border-border/40 px-4 py-3 flex items-center gap-3 backdrop-blur-xl bg-background/60">
+        <button onClick={onOpenMenu} className="p-2 hover:bg-muted rounded-lg">
+          <Plus className="h-5 w-5"/>
         </button>
+        <div className="font-semibold">Nova Chat</div>
+      </div>
+      <div className="flex-1 grid place-items-center p-8">
+        <div className="text-center max-w-md">
+          <Nova size={180} />
+          <h2 className="text-2xl font-bold mt-4">Hi! I'm Nova.</h2>
+          <p className="text-muted-foreground mt-1">Ask me anything — in English, Bangla, or Banglish. I'll explain step-by-step.</p>
+          <button onClick={onNew} className="mt-5 rounded-full gradient-hero px-6 py-3 font-semibold text-primary-foreground shadow-glow">
+            Start a chat
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -94,7 +130,7 @@ type SaveFn = (args: { data: { thread_id: string; role: "user"|"assistant"; cont
 type GetMsgsFn = (args: { data: { threadId: string } }) => Promise<{ messages: { role: string; content: string; id: string }[] }>;
 type AwardFn = (args: { data: { amount: number; reason: string } }) => Promise<unknown>;
 
-function ChatWindow({ threadId, getMsgs, save, award, onNewChat }: { threadId: string; getMsgs: GetMsgsFn; save: SaveFn; award: AwardFn; onNewChat: () => void }) {
+function ChatWindow({ threadId, getMsgs, save, award, onNewChat, onOpenMenu }: { threadId: string; getMsgs: GetMsgsFn; save: SaveFn; award: AwardFn; onNewChat: () => void; onOpenMenu: () => void }) {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["msgs", threadId],
@@ -158,6 +194,9 @@ function ChatWindow({ threadId, getMsgs, save, award, onNewChat }: { threadId: s
     <div className="h-screen flex flex-col">
       <div className="border-b border-border/40 px-4 md:px-6 py-3 flex items-center justify-between backdrop-blur-xl bg-background/60">
         <div className="flex items-center gap-3">
+          <button onClick={onOpenMenu} className="lg:hidden p-2 hover:bg-muted rounded-lg -ml-2">
+            <Plus className="h-5 w-5"/>
+          </button>
           <Nova size={40} float={false} glow={false} />
           <div>
             <div className="font-semibold">Nova</div>

@@ -96,22 +96,22 @@ function AppLayout() {
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0 pb-16 md:pb-0">
+      <main className="flex-1 min-w-0 pb-20 md:pb-0 h-full overflow-hidden">
         <Outlet />
       </main>
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/40 backdrop-blur-xl">
-        <div className="flex items-center justify-around p-2">
-          {nav_items.slice(0, 5).map(i => {
+        <div className="flex items-center justify-around p-2 overflow-x-auto no-scrollbar">
+          {nav_items.map(i => {
             const active = loc.pathname.startsWith(i.to);
             return (
               <Link key={i.to} to={i.to} className={cn(
-                "flex flex-col items-center gap-1 p-2 rounded-xl text-[10px] font-medium transition",
+                "flex flex-col items-center gap-1 p-2 rounded-xl text-[10px] font-medium transition shrink-0 min-w-[70px]",
                 active ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}>
                 <i.icon className={cn("h-5 w-5", active && "text-primary")} />
-                <span className="truncate max-w-[60px]">{i.label.replace("with Nova", "").trim()}</span>
+                <span className="truncate max-w-[64px]">{i.label.replace("with Nova", "").trim()}</span>
               </Link>
             );
           })}

@@ -35,7 +35,10 @@ export const Route = createFileRoute("/api/voice")({
           return new Response("Missing AI API keys", { status: 500 });
         }
 
-        const isBangla = lang === "bn-BD" || /[\u0980-\u09FF]/.test(lastText);
+        const hasBanglaScript = /[\u0980-\u09FF]/.test(lastText);
+        const banglishKeywords = /\b(ami|tumi|apni|kemon|achen|koro|bolchi|ki|na|o|theke|hobe|r|er|e)\b/i;
+        const isBangla = lang === "bn-BD" || hasBanglaScript || banglishKeywords.test(lastText);
+
         const history = compressConversationHistory(messages, "voice");
 
         try {

@@ -63,15 +63,6 @@ function RoomPage() {
   }, [roomId, user, room?.host_id]);
 
   useEffect(() => {
-    // Unmount cleanup for host
-    return () => {
-      if (user && room && user.id === room.host_id) {
-        supabase.from("study_rooms").delete().eq("id", roomId).then();
-      }
-    };
-  }, [user, room, roomId]);
-
-  useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
@@ -138,7 +129,7 @@ function RoomPage() {
   if (!room) return <div className="grid place-items-center h-[50vh]"><Loader2 className="animate-spin text-primary h-8 w-8"/></div>;
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-60px)] md:h-screen p-4 md:p-8">
+    <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-80px)] md:h-screen p-4 md:p-8 pb-24 md:pb-8">
       {/* Header */}
       <div className="glass rounded-t-2xl p-4 border-b border-border/40 shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-3">

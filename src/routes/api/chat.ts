@@ -58,7 +58,10 @@ export const Route = createFileRoute("/api/chat")({
           return new Response(JSON.stringify({ error: "AI not configured on server." }), { status: 500, headers: { "Content-Type": "application/json" } });
         }
 
-        const isBangla = /[\u0980-\u09FF]/.test(lastText);
+        // Improved detection: Bangla script OR keywords common in Banglish
+        const hasBanglaScript = /[\u0980-\u09FF]/.test(lastText);
+        const banglishKeywords = /\b(ami|tumi|apni|kemon|achen|koro|bolchi|ki|na|o|theke|hobe|r|er|e)\b/i;
+        const isBangla = hasBanglaScript || banglishKeywords.test(lastText);
 
         try {
           const history = compressConversationHistory(normalizeMessages(messages), "chat");
