@@ -2,8 +2,13 @@
 // Server-only utilities. Safe — no service role key.
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
-const SUPABASE_ANON = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+const env = typeof process !== 'undefined' ? process.env : (globalThis as any).process?.env || {};
+
+const rawUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || "";
+const rawKey = env.SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+
+const SUPABASE_URL = rawUrl === 'undefined' ? "" : rawUrl;
+const SUPABASE_ANON = rawKey === 'undefined' ? "" : rawKey;
 
 // Simple in-memory sliding-window rate limiter (per-key).
 // Note: per-instance only — fine as a first line of defense.
