@@ -38,6 +38,15 @@ export default defineConfig(({ command }) => ({
       ? [
           nitro({
             preset: "vercel",
+            inline: [
+              "tslib",
+              "@supabase/supabase-js",
+              "@supabase/auth-js",
+              "@supabase/postgrest-js",
+              "@supabase/functions-js",
+              "@supabase/storage-js",
+              "@supabase/realtime-js"
+            ],
             externals: {
               trace: false, // Disables complex tree-shaking that strips sub-dependencies
             },
