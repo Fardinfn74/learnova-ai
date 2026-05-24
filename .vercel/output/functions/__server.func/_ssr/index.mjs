@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { H as H3Event, t as toResponse } from "../_libs/h3-v2.mjs";
-import { E as parseRedirect, D as mergeHeaders, y as isRedirect, G as resolveManifestAssetLink, H as rootRouteId, o as getNormalizedURL, p as getOrigin, b as attachRouterServerSsrUtils, i as defineHandlerCallback, f as createSerializationAdapter, e as createRawStreamRPCPlugin, t as invariant, x as isNotFound, z as isResolvedRedirect, l as executeRewriteInput, h as defaultSerovalPlugins, C as makeSerovalPlugin, r as getStylesheetHref } from "../_libs/tanstack__router-core.mjs";
+import { G as parseRedirect, F as mergeHeaders, A as isRedirect, I as resolveManifestAssetLink, J as resolveManifestCssLink, p as getManifestScriptFormat, K as rootRouteId, q as getNormalizedURL, r as getOrigin, c as attachRouterServerSsrUtils, j as defineHandlerCallback, g as createSerializationAdapter, f as createRawStreamRPCPlugin, w as invariant, z as isNotFound, C as isResolvedRedirect, m as executeRewriteInput, i as defaultSerovalPlugins, E as makeSerovalPlugin, s as getScriptPreloadAttrs, u as getStylesheetHref } from "../_libs/tanstack__router-core.mjs";
 import { i as iu, P as Pu, s as su } from "../_libs/seroval.mjs";
 import { c as createMemoryHistory } from "../_libs/tanstack__history.mjs";
 import { j as jsxRuntimeExports } from "../_libs/react.mjs";
@@ -84,117 +84,112 @@ function getResponse() {
 }
 var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 async function getStartManifest(matchedRoutes) {
-  const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-CQm9XNtW.mjs");
+  const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-CdLQ2loi.mjs");
   const startManifest = tsrStartManifest();
-  const rootRoute = startManifest.routes[rootRouteId] = startManifest.routes[rootRouteId] || {};
-  rootRoute.assets = rootRoute.assets || [];
-  let injectedHeadScripts;
+  let routes = startManifest.routes;
+  routes[rootRouteId];
+  const manifestRoutes = {};
+  for (const k in routes) {
+    const v = routes[k];
+    const result = {};
+    if (v.preloads && v.preloads.length > 0) result.preloads = v.preloads;
+    if (v.scripts && v.scripts.length > 0) result.scripts = v.scripts;
+    if (v.css?.length) result.css = v.css;
+    if (result.preloads || result.scripts || result.css) manifestRoutes[k] = result;
+  }
   return {
     manifest: {
-      inlineCss: startManifest.inlineCss,
-      routes: Object.fromEntries(Object.entries(startManifest.routes).flatMap(([k, v]) => {
-        const result = {};
-        let hasData = false;
-        if (v.preloads && v.preloads.length > 0) {
-          result["preloads"] = v.preloads;
-          hasData = true;
-        }
-        if (v.assets && v.assets.length > 0) {
-          result["assets"] = v.assets;
-          hasData = true;
-        }
-        if (!hasData) return [];
-        return [[k, result]];
-      }))
+      ...startManifest.scriptFormat ? { scriptFormat: startManifest.scriptFormat } : {},
+      ...startManifest.inlineCss ? { inlineCss: startManifest.inlineCss } : {},
+      routes: manifestRoutes
     },
-    clientEntry: startManifest.clientEntry,
-    injectedHeadScripts
+    clientEntry: startManifest.clientEntry
   };
 }
 const manifest = {
   "0a8085101806ca5c704ccec4ec31b55b8d67cc3055a3d1cb34cce3511894f6df": {
     functionName: "awardXp_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "1b2b7191b91c3ff789bd5a616b7e024a46aeaff6d0658c1531356036b7b09f53": {
     functionName: "listQuizzes_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "25f70043a9c51486d23c5082abc8d71fd8cb4f7fcab680b9388e48a2b95c8f9c": {
     functionName: "generatePodcast_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "2cf72878db8e18ebacc3ab18eed1bef4cb3152fd8eaff5fedc805f882179fc75": {
     functionName: "getProfile_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "362c02b0a718f55c96672705bcf6d2b090915d42b9be5bdf464d5641b2123d53": {
     functionName: "xpHistory_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "473c9cddf91b27ff2460c184dffca1676fad003867f4633c5b577f33e3952999": {
     functionName: "getNote_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "5a1ebc07180d8b151113c01624cc0dcef24d1cd78c558785d46e545bcf84c640": {
     functionName: "listNotes_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "65750bfb5c27df3558a9c4f33ff513fb15364ec4647ca3e23b63df3037bfb15c": {
     functionName: "analyzeDrawing_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "696da997bc432283232876748c665c27d205fec22d987ffc1b6948fb98061ff0": {
     functionName: "saveMessage_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "75329c7c4ff75e07d1d0909733fee351e9eb0d4cdb102b525bf105748123298f": {
     functionName: "summarizeNote_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "807b46fd34ccb53aee8d2323f2f49d06048a688cef95bded43d46e17a905e130": {
     functionName: "listThreads_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "8298200df457bf6c3defa152606ad9cf8e39c5b1fdfa069056490728ad0022e1": {
     functionName: "listBadges_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "8633c3504b8395fb6f321efe7c6b82121f8635edb929510ee62f65a6a0b3d097": {
     functionName: "getQuiz_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "977a307db3b12d62b2b86e112fd47189f08ef3be335fe72593b0421de09a73d5": {
     functionName: "getThreadMessages_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "b7ff9bb7d762a81cb8704aba02fb217741ea3bc1d73535d2b4d0d4475b0ea5d8": {
     functionName: "updateProfile_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "bdae223da88f48a2748f77243bd92b86bdbdee720498aef131ffbd6f795c85b7": {
     functionName: "generateQuiz_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "c7bda1f65790bbfa3dd835523f816c6e03aeb264230f3f310a845e947ed9a0df": {
     functionName: "createThread_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "d77a95895b0a42df2722c950307f63e14d619ba3f481a38e08c40b01d167dd32": {
     functionName: "deleteThread_createServerFn_handler",
-    importer: () => import("./learnova.functions-DTVqoBgG.mjs")
+    importer: () => import("./learnova.functions-BtcSBwm7.mjs")
   },
   "e35bddc95802986bc149006002b212091611bf1e7f9de561056e931f56864d9e": {
     functionName: "createBattleQuestions_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "ea84f326f490e76c4a356ae32318f7662447176cdaa95486e841462d0382705b": {
     functionName: "submitQuiz_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   },
   "f0a5ad3ea41e0981f2316f12f6513cbc0fdddd4dde839319874118bd8f02f913": {
     functionName: "triggerNovaInRoom_createServerFn_handler",
-    importer: () => import("./learn-ai.functions-BF4en3q1.mjs")
+    importer: () => import("./learn-ai.functions-B87W2wtp.mjs")
   }
 };
 async function getServerFnById(id, access) {
@@ -948,31 +943,26 @@ function collectStaticHintsFromManifest(manifest2, matchedRoutes) {
     const routeManifest = manifest2.routes[route.id];
     if (!routeManifest) continue;
     for (const link of routeManifest.preloads ?? []) {
-      const { href, crossOrigin } = resolveManifestAssetLink(link);
+      const attrs = getScriptPreloadAttrs(manifest2, link);
       const hint = {
-        href,
-        rel: "modulepreload",
+        href: attrs.href,
+        rel: attrs.rel,
         as: "script"
       };
-      if (crossOrigin !== void 0) hint.crossOrigin = crossOrigin;
+      if (attrs.crossOrigin !== void 0) hint.crossOrigin = attrs.crossOrigin;
       hints.push(hint);
     }
-    for (const asset of routeManifest.assets ?? []) {
-      if (asset.tag !== "link") continue;
-      const stylesheetHref = getStylesheetHref(asset);
-      if (stylesheetHref) {
-        if (manifest2.inlineCss?.styles[stylesheetHref] !== void 0) continue;
-        const hint2 = {
-          href: stylesheetHref,
-          rel: "preload",
-          as: "style"
-        };
-        addEarlyHintFetchAttrs(hint2, asset.attrs);
-        hints.push(hint2);
-        continue;
-      }
-      const hint = linkAttrsToEarlyHint(asset.attrs);
-      if (hint) hints.push(hint);
+    for (const link of routeManifest.css ?? []) {
+      const stylesheetHref = getStylesheetHref(link);
+      if (manifest2.inlineCss?.styles[stylesheetHref] !== void 0) continue;
+      const resolvedLink = resolveManifestCssLink(link);
+      const hint = {
+        href: stylesheetHref,
+        rel: "preload",
+        as: "style"
+      };
+      if (resolvedLink.crossOrigin !== void 0) hint.crossOrigin = resolvedLink.crossOrigin;
+      hints.push(hint);
     }
   }
   return hints;
@@ -1183,7 +1173,7 @@ function resolveTransformAssetsConfig(transform) {
       type: "transform",
       transformFn: ({ url, kind }) => {
         const href = `${prefix}${url}`;
-        if (kind === "clientEntry" || kind === "css-url") return { href };
+        if (kind === "css-url") return { href };
         const co = resolveTransformAssetsCrossOrigin(crossOrigin, kind);
         return co ? {
           href,
@@ -1204,74 +1194,101 @@ function resolveTransformAssetsConfig(transform) {
     cache: transform.cache !== false
   };
 }
-function buildClientEntryScriptTag(clientEntry, injectedHeadScripts) {
-  let script = `import(${JSON.stringify(clientEntry)})`;
-  if (injectedHeadScripts) script = `${injectedHeadScripts};${script}`;
-  return {
-    tag: "script",
-    attrs: {
-      type: "module",
-      async: true
-    },
-    children: script
-  };
+function buildClientEntryScriptTag(clientEntry, scriptFormat = "module", crossOrigin) {
+  return { attrs: {
+    ...scriptFormat === "module" ? { type: "module" } : {},
+    async: true,
+    src: clientEntry,
+    ...{}
+  } };
 }
-function assignManifestAssetLink(link, next) {
+function assignManifestLink(link, next) {
   if (typeof link === "string") return next.crossOrigin ? next : next.href;
-  return next.crossOrigin ? next : { href: next.href };
+  const nextLink = {
+    ...link,
+    href: next.href
+  };
+  if (next.crossOrigin) nextLink.crossOrigin = next.crossOrigin;
+  else delete nextLink.crossOrigin;
+  return nextLink;
+}
+function appendUniqueManifestAssetLink(target, link) {
+  const href = typeof link === "string" ? link : link.href;
+  if (target) {
+    for (const item of target) if ((typeof item === "string" ? item : item.href) === href) return target;
+  }
+  return [...target ?? [], link];
+}
+function addClientEntryToManifest(manifest2, clientEntry) {
+  const rootRoute = manifest2.routes.__root__ ?? {};
+  const rootScripts = rootRoute.scripts ?? [];
+  const scripts = rootScripts.some((script) => script.attrs?.src === clientEntry) ? rootScripts : [...rootScripts, buildClientEntryScriptTag(clientEntry, getManifestScriptFormat(manifest2))];
+  manifest2.routes = {
+    ...manifest2.routes,
+    __root__: {
+      ...rootRoute,
+      preloads: appendUniqueManifestAssetLink(rootRoute.preloads, clientEntry),
+      scripts
+    }
+  };
 }
 async function transformManifestAssets(source, transformFn, _opts) {
   const manifest2 = structuredClone(source.manifest);
-  if (!(_opts?.inlineCss !== false)) delete manifest2.inlineCss;
+  const inlineCssEnabled = _opts?.inlineCss !== false;
+  const scriptTransforms = /* @__PURE__ */ new Map();
+  const transformScript = (url) => {
+    const cached = scriptTransforms.get(url);
+    if (cached) return cached;
+    const transformed = Promise.resolve(transformFn({
+      url,
+      kind: "script"
+    })).then(normalizeTransformAssetResult);
+    scriptTransforms.set(url, transformed);
+    return transformed;
+  };
+  if (!inlineCssEnabled) delete manifest2.inlineCss;
   else if (manifest2.inlineCss) manifest2.inlineCss = await transformInlineCssStyles(manifest2.inlineCss, transformFn);
+  addClientEntryToManifest(manifest2, source.clientEntry);
   for (const route of Object.values(manifest2.routes)) {
-    if (route.preloads) route.preloads = await Promise.all(route.preloads.map(async (link) => {
-      const result = normalizeTransformAssetResult(await transformFn({
-        url: resolveManifestAssetLink(link).href,
-        kind: "modulepreload"
-      }));
-      return assignManifestAssetLink(link, {
+    if (route.preloads?.length) route.preloads = await Promise.all(route.preloads.map(async (link) => {
+      const result = await transformScript(resolveManifestAssetLink(link).href);
+      return assignManifestLink(link, {
         href: result.href,
         crossOrigin: result.crossOrigin
       });
     }));
-    if (route.assets && !manifest2.inlineCss) {
-      for (const asset of route.assets) if (asset.tag === "link" && asset.attrs?.href) {
-        const rel = asset.attrs.rel;
-        if (!(typeof rel === "string" ? rel.split(/\s+/) : []).includes("stylesheet")) continue;
-        const result = normalizeTransformAssetResult(await transformFn({
-          url: asset.attrs.href,
-          kind: "stylesheet"
-        }));
-        asset.attrs.href = result.href;
-        if (result.crossOrigin) asset.attrs.crossOrigin = result.crossOrigin;
-        else delete asset.attrs.crossOrigin;
-      }
+    if (route.css?.length && !manifest2.inlineCss) route.css = await Promise.all(route.css.map(async (link) => {
+      const result = normalizeTransformAssetResult(await transformFn({
+        url: resolveManifestCssLink(link).href,
+        kind: "stylesheet"
+      }));
+      return assignManifestLink(link, {
+        href: result.href,
+        crossOrigin: result.crossOrigin
+      });
+    }));
+    if (route.scripts?.length) for (const script of route.scripts) {
+      const src = script.attrs?.src;
+      if (typeof src !== "string") continue;
+      const result = await transformScript(src);
+      script.attrs = {
+        ...script.attrs,
+        src: result.href
+      };
+      if (result.crossOrigin) script.attrs.crossOrigin = result.crossOrigin;
+      else delete script.attrs.crossOrigin;
     }
   }
-  const transformedClientEntry = normalizeTransformAssetResult(await transformFn({
-    url: source.clientEntry,
-    kind: "clientEntry"
-  }));
-  const rootRoute = manifest2.routes[rootRouteId] = manifest2.routes[rootRouteId] || {};
-  rootRoute.assets = rootRoute.assets || [];
-  rootRoute.assets.push(buildClientEntryScriptTag(transformedClientEntry.href, source.injectedHeadScripts));
   return manifest2;
 }
 function buildManifestWithClientEntry(source, opts) {
-  const scriptTag = buildClientEntryScriptTag(source.clientEntry, source.injectedHeadScripts);
-  const baseRootRoute = source.manifest.routes[rootRouteId];
-  const routes = {
-    ...source.manifest.routes,
-    [rootRouteId]: {
-      ...baseRootRoute,
-      assets: [...baseRootRoute?.assets || [], scriptTag]
-    }
+  const manifest2 = {
+    ...source.manifest.scriptFormat ? { scriptFormat: source.manifest.scriptFormat } : {},
+    ...opts?.inlineCss !== false && source.manifest.inlineCss ? { inlineCss: structuredClone(source.manifest.inlineCss) } : {},
+    routes: { ...source.manifest.routes }
   };
-  return {
-    ...opts?.inlineCss === false ? {} : { inlineCss: structuredClone(source.manifest.inlineCss) },
-    routes
-  };
+  addClientEntryToManifest(manifest2, source.clientEntry);
+  return manifest2;
 }
 function getStaticHandlerInlineCssDefault(handlerInlineCss) {
   if (typeof handlerInlineCss === "function") return;
@@ -1429,8 +1446,8 @@ var getBaseManifest = getProdBaseManifest;
 var createEarlyHintsForRequest = createEarlyHintsCollector;
 async function loadEntries() {
   const [routerEntry, startEntry, pluginAdapters] = await Promise.all([
-    import("./router-BWQ2rPTY.mjs").then((n) => n.r),
-    import("./start-CYaDtirl.mjs"),
+    import("./router-DDX2tWq5.mjs").then((n) => n.r),
+    import("./start-jndbWamk.mjs"),
     import("../__23tanstack-start-plugin-adapters-Cwee5PKy.mjs")
   ]);
   return {
@@ -1599,8 +1616,7 @@ function createStartHandler(cbOrOptions) {
         attachRouterServerSsrUtils({
           router: routerInstance,
           manifest: manifest2,
-          getRequestAssets: () => getStartContext({ throwIfNotFound: false })?.requestAssets,
-          includeUnmatchedRouteAssets: false
+          getRequestAssets: () => getStartContext({ throwIfNotFound: false })?.requestAssets
         });
         routerInstance.update({ additionalContext: { serverContext } });
         await routerInstance.load();

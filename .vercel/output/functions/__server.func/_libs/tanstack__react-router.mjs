@@ -1,5 +1,5 @@
 import { r as reactExports, j as jsxRuntimeExports, R as React } from "./react.mjs";
-import { t as invariant, u as isDangerousProtocol, k as exactPathTest, F as removeTrailingSlash, s as hasKeys, g as deepEqual, m as functionalUpdate, B as BaseRootRoute, a as BaseRoute, w as isModuleNotFoundError, x as isNotFound, q as getScrollRestorationScriptForRouter, H as rootRouteId, A as isServer, y as isRedirect, d as createNonReactiveReadonlyStore, c as createNonReactiveMutableStore, R as RouterCore, j as escapeHtml, v as isInlinableStylesheet, n as getAssetCrossOrigin, G as resolveManifestAssetLink, J as transformReadableStreamWithRouter, I as transformPipeableStreamWithRouter } from "./tanstack__router-core.mjs";
+import { w as invariant, x as isDangerousProtocol, l as exactPathTest, H as removeTrailingSlash, v as hasKeys, h as deepEqual, n as functionalUpdate, B as BaseRootRoute, a as BaseRoute, y as isModuleNotFoundError, z as isNotFound, t as getScrollRestorationScriptForRouter, K as rootRouteId, D as isServer, A as isRedirect, e as createNonReactiveReadonlyStore, d as createNonReactiveMutableStore, R as RouterCore, k as escapeHtml, o as getAssetCrossOrigin, s as getScriptPreloadAttrs, b as appendUniqueUserTags, J as resolveManifestCssLink, M as transformReadableStreamWithRouter, L as transformPipeableStreamWithRouter } from "./tanstack__router-core.mjs";
 import { a as ReactDOMServer } from "./react-dom.mjs";
 import { PassThrough } from "node:stream";
 import { i as isbot } from "./isbot.mjs";
@@ -787,8 +787,14 @@ function useLocation(opts) {
     return location;
   }
 }
+var noopScriptHandler = () => {
+};
+function setScriptAttrs(script, attrs) {
+  if (!attrs) return;
+  for (const [key, value] of Object.entries(attrs)) if (key !== "suppressHydrationWarning" && value !== void 0 && value !== false) script.setAttribute(key, typeof value === "boolean" ? "" : String(value));
+}
 function Asset(asset) {
-  const { attrs, children, nonce } = asset;
+  const { attrs, children, nonce, preventScriptHoist } = asset;
   switch (asset.tag) {
     case "title":
       return /* @__PURE__ */ jsxRuntimeExports.jsx("title", {
@@ -818,13 +824,14 @@ function Asset(asset) {
     case "script":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Script, {
         attrs,
+        preventScriptHoist,
         children
       });
     default:
       return null;
   }
 }
-function Script({ attrs, children }) {
+function Script({ attrs, children, preventScriptHoist }) {
   useRouter();
   useHydrated();
   const dataScript = typeof attrs?.type === "string" && attrs.type !== "" && attrs.type !== "text/javascript" && attrs.type !== "module";
@@ -839,32 +846,26 @@ function Script({ attrs, children }) {
           return attrs.src;
         }
       })();
-      if (Array.from(document.querySelectorAll("script[src]")).find((el) => el.src === normSrc)) return;
+      for (const el of document.querySelectorAll("script[src]")) if (el.src === normSrc) return;
       const script = document.createElement("script");
-      for (const [key, value] of Object.entries(attrs)) if (key !== "suppressHydrationWarning" && value !== void 0 && value !== false) script.setAttribute(key, typeof value === "boolean" ? "" : String(value));
+      setScriptAttrs(script, attrs);
       document.head.appendChild(script);
-      return () => {
-        if (script.parentNode) script.parentNode.removeChild(script);
-      };
+      return () => script.remove();
     }
     if (typeof children === "string") {
       const typeAttr = typeof attrs?.type === "string" ? attrs.type : "text/javascript";
       const nonceAttr = typeof attrs?.nonce === "string" ? attrs.nonce : void 0;
-      if (Array.from(document.querySelectorAll("script:not([src])")).find((el) => {
-        if (!(el instanceof HTMLScriptElement)) return false;
+      for (const el of document.querySelectorAll("script:not([src])")) {
+        if (!(el instanceof HTMLScriptElement)) continue;
         const sType = el.getAttribute("type") ?? "text/javascript";
         const sNonce = el.getAttribute("nonce") ?? void 0;
-        return el.textContent === children && sType === typeAttr && sNonce === nonceAttr;
-      })) return;
+        if (el.textContent === children && sType === typeAttr && sNonce === nonceAttr) return;
+      }
       const script = document.createElement("script");
       script.textContent = children;
-      if (attrs) {
-        for (const [key, value] of Object.entries(attrs)) if (key !== "suppressHydrationWarning" && value !== void 0 && value !== false) script.setAttribute(key, typeof value === "boolean" ? "" : String(value));
-      }
+      setScriptAttrs(script, attrs);
       document.head.appendChild(script);
-      return () => {
-        if (script.parentNode) script.parentNode.removeChild(script);
-      };
+      return () => script.remove();
     }
   }, [
     attrs,
@@ -872,10 +873,17 @@ function Script({ attrs, children }) {
     dataScript
   ]);
   {
-    if (attrs?.src) return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
-      ...attrs,
-      suppressHydrationWarning: true
-    });
+    if (attrs?.src) {
+      if (!preventScriptHoist) return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
+        ...attrs,
+        suppressHydrationWarning: true
+      });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
+        ...attrs,
+        onLoad: noopScriptHandler,
+        suppressHydrationWarning: true
+      });
+    }
     if (typeof children === "string") return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
       ...attrs,
       dangerouslySetInnerHTML: { __html: children },
@@ -885,7 +893,7 @@ function Script({ attrs, children }) {
   }
 }
 function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
-  const routeMeta = matches.map((match) => match.meta).filter(Boolean);
+  const routeMeta = matches.map((match) => match.meta).filter((meta) => meta !== void 0);
   const resultMeta = [];
   const metaByAttribute = {};
   let title;
@@ -931,7 +939,7 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     }
   });
   resultMeta.reverse();
-  const constructedLinks = matches.map((match) => match.links).filter(Boolean).flat(1).map((link) => ({
+  const constructedLinks = matches.flatMap((match) => match.links ?? []).filter((link) => link !== void 0).map((link) => ({
     tag: "link",
     attrs: {
       ...link,
@@ -939,44 +947,46 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     }
   }));
   const manifest = router.ssr?.manifest;
-  const assetLinks = matches.map((match) => manifest?.routes[match.routeId]?.assets ?? []).filter(Boolean).flat(1).flatMap((asset) => {
-    if (asset.tag === "link") {
-      if (isInlinableStylesheet(manifest, asset)) return [];
-      return [{
-        tag: "link",
-        attrs: {
-          ...asset.attrs,
-          crossOrigin: getAssetCrossOrigin(assetCrossOrigin, "stylesheet") ?? asset.attrs?.crossOrigin,
-          suppressHydrationWarning: true,
-          nonce
-        }
-      }];
-    }
-    if (asset.tag === "style") return [{
+  const manifestCssTags = [];
+  if (manifest) {
+    matches.forEach((match) => {
+      manifest.routes[match.routeId]?.css?.forEach((link) => {
+        const resolvedLink = resolveManifestCssLink(link);
+        manifestCssTags.push({
+          tag: "link",
+          attrs: {
+            rel: "stylesheet",
+            ...resolvedLink,
+            crossOrigin: getAssetCrossOrigin(assetCrossOrigin, "stylesheet") ?? resolvedLink.crossOrigin,
+            suppressHydrationWarning: true,
+            nonce
+          }
+        });
+      });
+    });
+    if (manifest.inlineStyle) manifestCssTags.push({
       tag: "style",
       attrs: {
-        ...asset.attrs,
+        ...manifest.inlineStyle.attrs,
         nonce
       },
-      children: asset.children,
-      ...asset.inlineCss ? { inlineCss: true } : {}
-    }];
-    return [];
-  });
-  const preloadLinks = [];
-  matches.map((match) => router.looseRoutesById[match.routeId]).forEach((route) => router.ssr?.manifest?.routes[route.id]?.preloads?.filter(Boolean).forEach((preload) => {
-    const preloadLink = resolveManifestAssetLink(preload);
-    preloadLinks.push({
-      tag: "link",
-      attrs: {
-        rel: "modulepreload",
-        href: preloadLink.href,
-        crossOrigin: getAssetCrossOrigin(assetCrossOrigin, "modulepreload") ?? preloadLink.crossOrigin,
-        nonce
-      }
+      children: manifest.inlineStyle.children,
+      inlineCss: true
     });
-  }));
-  const styles = matches.map((match) => match.styles).flat(1).filter(Boolean).map(({ children, ...attrs }) => ({
+  }
+  const preloadLinks = [];
+  if (manifest) matches.forEach((match) => {
+    manifest.routes[match.routeId]?.preloads?.forEach((preload) => {
+      preloadLinks.push({
+        tag: "link",
+        attrs: {
+          ...getScriptPreloadAttrs(manifest, preload, assetCrossOrigin),
+          nonce
+        }
+      });
+    });
+  });
+  const styles = matches.flatMap((match) => match.styles ?? []).filter((style) => style !== void 0).map(({ children, ...attrs }) => ({
     tag: "style",
     attrs: {
       ...attrs,
@@ -984,7 +994,7 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     },
     children
   }));
-  const headScripts = matches.map((match) => match.headScripts).flat(1).filter(Boolean).map(({ children, ...script }) => ({
+  const headScripts = matches.flatMap((match) => match.headScripts ?? []).filter((script) => script !== void 0).map(({ children, ...script }) => ({
     tag: "script",
     attrs: {
       ...script,
@@ -992,29 +1002,20 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     },
     children
   }));
-  return uniqBy([
-    ...resultMeta,
-    ...preloadLinks,
-    ...constructedLinks,
-    ...assetLinks,
-    ...styles,
-    ...headScripts
-  ], (d) => JSON.stringify(d));
+  const tags = [];
+  appendUniqueUserTags(tags, resultMeta);
+  tags.push(...preloadLinks);
+  appendUniqueUserTags(tags, constructedLinks);
+  tags.push(...manifestCssTags);
+  appendUniqueUserTags(tags, styles);
+  appendUniqueUserTags(tags, headScripts);
+  return tags;
 }
 var useTags = (assetCrossOrigin) => {
   const router = useRouter();
   const nonce = router.options.ssr?.nonce;
   return buildTagsFromMatches(router, nonce, router.stores.matches.get(), assetCrossOrigin);
 };
-function uniqBy(arr, fn) {
-  const seen = /* @__PURE__ */ new Set();
-  return arr.filter((item) => {
-    const key = fn(item);
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
 function HeadContent(props) {
   const tags = useTags(props.assetCrossOrigin);
   const nonce = useRouter().options.ssr?.nonce;
@@ -1031,16 +1032,19 @@ var Scripts = () => {
     const assetScripts = [];
     const manifest = router.ssr?.manifest;
     if (!manifest) return [];
-    matches.map((match) => router.looseRoutesById[match.routeId]).forEach((route) => manifest.routes[route.id]?.assets?.filter((d) => d.tag === "script").forEach((asset) => {
-      assetScripts.push({
+    for (const match of matches) {
+      const scripts = manifest.routes[match.routeId]?.scripts;
+      if (!scripts) continue;
+      for (const asset of scripts) assetScripts.push({
         tag: "script",
         attrs: {
           ...asset.attrs,
           nonce
         },
-        children: asset.children
+        children: asset.children,
+        ...typeof asset.attrs?.src === "string" ? { preventScriptHoist: true } : {}
       });
-    }));
+    }
     return assetScripts;
   };
   const getScripts = (matches) => matches.map((match) => match.scripts).flat(1).filter(Boolean).map(({ children, ...script }) => ({
@@ -1059,10 +1063,11 @@ var Scripts = () => {
   }
 };
 function renderScripts(router, scripts, assetScripts) {
-  let serverBufferedScript = void 0;
-  if (router.serverSsr) serverBufferedScript = router.serverSsr.takeBufferedScripts();
   const allScripts = [...scripts, ...assetScripts];
-  if (serverBufferedScript) allScripts.unshift(serverBufferedScript);
+  if (router.serverSsr) {
+    const serverBufferedScript = router.serverSsr.takeBufferedScripts();
+    if (serverBufferedScript) allScripts.unshift(serverBufferedScript);
+  }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: allScripts.map((asset, i) => /* @__PURE__ */ reactExports.createElement(Asset, {
     ...asset,
     key: `tsr-scripts-${asset.tag}-${i}`

@@ -91,7 +91,8 @@ function useBaseQuery(options, Observer, queryClient) {
     defaultedOptions
   );
   const query = client.getQueryCache().get(defaultedOptions.queryHash);
-  defaultedOptions._optimisticResults = isRestoring ? "isRestoring" : "optimistic";
+  const subscribed = options.subscribed !== false;
+  defaultedOptions._optimisticResults = isRestoring ? "isRestoring" : subscribed ? "optimistic" : void 0;
   ensureSuspenseTimers(defaultedOptions);
   ensurePreventErrorBoundaryRetry(defaultedOptions, errorResetBoundary, query);
   useClearResetErrorBoundary(errorResetBoundary);
@@ -103,7 +104,7 @@ function useBaseQuery(options, Observer, queryClient) {
     )
   );
   const result = observer.getOptimisticResult(defaultedOptions);
-  const shouldSubscribe = !isRestoring && options.subscribed !== false;
+  const shouldSubscribe = !isRestoring && subscribed;
   reactExports.useSyncExternalStore(
     reactExports.useCallback(
       (onStoreChange) => {
