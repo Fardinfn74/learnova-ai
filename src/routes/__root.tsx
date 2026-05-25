@@ -57,10 +57,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "LEARNOVA — Meet Nova, your AI tutor" },
       { property: "og:description", content: "Adaptive AI tutor with personalized paths, quizzes, coding help, summaries and gamified learning. Chat with Nova in English, Bangla or Banglish." },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "/webicon.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "LEARNOVA — Meet Nova, your AI tutor" },
       { name: "twitter:description", content: "Adaptive AI tutor with personalized paths, quizzes, coding help, summaries and gamified learning. Chat with Nova in English, Bangla or Banglish." },
-
+      { name: "twitter:image", content: "/webicon.png" },
     ],
     links: [
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
