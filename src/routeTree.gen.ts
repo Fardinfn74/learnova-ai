@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DocsRouteImport } from './routes/docs'
+import { Route as CreatedByRouteImport } from './routes/created-by'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
@@ -31,6 +32,11 @@ import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatedByRoute = CreatedByRouteImport.update({
+  id: '/created-by',
+  path: '/created-by',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/created-by': typeof CreatedByRoute
   '/docs': typeof DocsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/voice': typeof ApiVoiceRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/created-by': typeof CreatedByRoute
   '/docs': typeof DocsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/voice': typeof ApiVoiceRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/created-by': typeof CreatedByRoute
   '/docs': typeof DocsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/voice': typeof ApiVoiceRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/created-by'
     | '/docs'
     | '/api/chat'
     | '/api/voice'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/created-by'
     | '/docs'
     | '/api/chat'
     | '/api/voice'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/created-by'
     | '/docs'
     | '/api/chat'
     | '/api/voice'
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CreatedByRoute: typeof CreatedByRoute
   DocsRoute: typeof DocsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiVoiceRoute: typeof ApiVoiceRoute
@@ -260,6 +273,13 @@ declare module '@tanstack/react-router' {
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/created-by': {
+      id: '/created-by'
+      path: '/created-by'
+      fullPath: '/created-by'
+      preLoaderRoute: typeof CreatedByRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -418,6 +438,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  CreatedByRoute: CreatedByRoute,
   DocsRoute: DocsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiVoiceRoute: ApiVoiceRoute,
