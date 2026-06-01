@@ -2,7 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nova } from "@/components/Nova";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Reveal } from "@/hooks/use-reveal";
-import { Sparkles, BookOpen, Code2, Trophy, Languages, FileText, Brain, MessageSquare, Target, Shield, Mic, Swords, Headphones, Users, Pencil } from "lucide-react";
+import { Sparkles, BookOpen, Code2, Trophy, Languages, FileText, Brain, MessageSquare, Target, Shield, Mic, Swords, Headphones, Users, Pencil, Menu, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -35,13 +41,15 @@ function Landing() {
     <div className="min-h-screen">
       {/* NAV */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/60 border-b border-border/40">
-        <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-            <div className="h-9 w-9 rounded-xl gradient-hero shadow-glow grid place-items-center text-white">
-              <Sparkles className="h-5 w-5" />
+        <div className="mx-auto max-w-7xl px-4 md:px-6 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 font-bold text-base md:text-lg shrink-0">
+            <div className="h-8 w-8 md:h-9 md:w-9 rounded-xl gradient-hero shadow-glow grid place-items-center text-white">
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
             </div>
             <span className="gradient-text font-display tracking-tight">LEARNOVA</span>
           </Link>
+
+          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-muted-foreground">
             <Link to="/" hash="about" className="hover:text-foreground transition">ABOUT</Link>
             <Link to="/" hash="features" className="hover:text-foreground transition">FEATURES</Link>
@@ -49,10 +57,36 @@ function Landing() {
             <Link to="/docs" className="hover:text-foreground transition">DOCS</Link>
             <Link to="/created-by" className="hover:text-primary transition">CREATED BY</Link>
           </nav>
-          <div className="flex items-center gap-2">
+
+          {/* Mobile Nav Dropdown */}
+          <div className="md:hidden flex-1 flex justify-center px-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-[10px] font-bold tracking-widest text-muted-foreground bg-muted/40 px-3 py-1.5 rounded-full outline-none">
+                MENU <ChevronDown className="h-3 w-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-48 bg-background/95 backdrop-blur-xl border-border/40">
+                <DropdownMenuItem asChild>
+                  <Link to="/" hash="about" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">ABOUT</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/" hash="features" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">FEATURES</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/" hash="guide" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">GUIDE</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/docs" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">DOCS</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/created-by" className="w-full cursor-pointer font-bold text-[10px] tracking-widest text-primary">CREATED BY</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <div className="flex items-center gap-2 md:gap-3">
             <ThemeToggle />
-            <Link to="/auth" className="text-sm font-medium px-4 py-2 rounded-full hover:bg-muted transition">Sign in</Link>
-            <Link to="/auth" className="text-sm font-semibold px-5 py-2 rounded-full gradient-hero text-primary-foreground shadow-glow hover:scale-105 transition">
+            <Link to="/auth" className="text-xs md:text-sm font-semibold px-4 md:px-5 py-2 rounded-full gradient-hero text-primary-foreground shadow-glow hover:scale-105 transition whitespace-nowrap">
               Get started
             </Link>
           </div>
