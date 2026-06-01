@@ -42,8 +42,12 @@ function Landing() {
             </div>
             <span className="gradient-text font-display tracking-tight">LEARNOVA</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            <Link to="/docs" className="hover:text-foreground transition">Docs</Link>
+          <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-muted-foreground">
+            <Link to="/" hash="about" className="hover:text-foreground transition">ABOUT</Link>
+            <Link to="/" hash="features" className="hover:text-foreground transition">FEATURES</Link>
+            <Link to="/" hash="guide" className="hover:text-foreground transition">GUIDE</Link>
+            <Link to="/docs" className="hover:text-foreground transition">DOCS</Link>
+            <Link to="/created-by" className="hover:text-primary transition">CREATED BY</Link>
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -99,44 +103,8 @@ function Landing() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section id="features" className="mx-auto max-w-7xl px-6 py-20">
-        <Reveal className="text-center mb-14">
-          <h2 className="text-4xl md:text-5xl font-bold">Everything a learner needs.<br/><span className="gradient-text">Nothing they don't.</span></h2>
-          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">Ten features built around how students actually learn — from first concept to mock test.</p>
-        </Reveal>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {features.map((f, i) => (
-            <Reveal key={f.title} delay={i * 70} className="group glass tilt-card rounded-3xl p-6 hover:shadow-glow">
-              <div className="h-12 w-12 rounded-2xl gradient-nova grid place-items-center text-white shadow-glow mb-4 group-hover:scale-110 transition">
-                <f.icon className="h-6 w-6" />
-              </div>
-              <h3 className="font-semibold text-lg">{f.title}</h3>
-              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{f.desc}</p>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section id="how" className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { n: "01", t: "Tell Nova your goal", d: "From SSC chemistry to React debugging — say what you want to learn." },
-            { n: "02", t: "Learn your way", d: "Chat, quizzes, code help, or summarize a PDF. Nova adapts to your pace." },
-            { n: "03", t: "Level up", d: "Earn XP, unlock badges, keep your streak alive — progress feels like a game." },
-          ].map((s, i) => (
-            <Reveal key={s.n} delay={i * 120} className="glass rounded-3xl p-8 ring-gradient">
-              <div className="text-5xl font-display font-bold gradient-text">{s.n}</div>
-              <h3 className="mt-3 text-xl font-semibold">{s.t}</h3>
-              <p className="mt-2 text-muted-foreground text-sm leading-relaxed">{s.d}</p>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* MEET NOVA */}
-      <section id="nova" className="mx-auto max-w-6xl px-6 py-20">
+      {/* MEET NOVA (ABOUT) */}
+      <section id="about" className="mx-auto max-w-6xl px-6 py-20">
         <Reveal className="glass rounded-[2.5rem] p-10 md:p-16 grid md:grid-cols-2 gap-10 items-center ring-gradient">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold">Say hi to <span className="gradient-text">Nova</span> 👋</h2>
@@ -158,6 +126,42 @@ function Landing() {
             <Nova size={300} />
           </div>
         </Reveal>
+      </section>
+
+      {/* FEATURES */}
+      <section id="features" className="mx-auto max-w-7xl px-6 py-20">
+        <Reveal className="text-center mb-14">
+          <h2 className="text-4xl md:text-5xl font-bold">Everything a learner needs.<br/><span className="gradient-text">Nothing they don't.</span></h2>
+          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">Ten features built around how students actually learn — from first concept to mock test.</p>
+        </Reveal>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {features.map((f, i) => (
+            <Reveal key={f.title} delay={i * 70} className="group glass tilt-card rounded-3xl p-6 hover:shadow-glow">
+              <div className="h-12 w-12 rounded-2xl gradient-nova grid place-items-center text-white shadow-glow mb-4 group-hover:scale-110 transition">
+                <f.icon className="h-6 w-6" />
+              </div>
+              <h3 className="font-semibold text-lg">{f.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{f.desc}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS (GUIDE) */}
+      <section id="guide" className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { n: "01", t: "Tell Nova your goal", d: "From SSC chemistry to React debugging — say what you want to learn." },
+            { n: "02", t: "Learn your way", d: "Chat, quizzes, code help, or summarize a PDF. Nova adapts to your pace." },
+            { n: "03", t: "Level up", d: "Earn XP, unlock badges, keep your streak alive — progress feels like a game." },
+          ].map((s, i) => (
+            <Reveal key={s.n} delay={i * 120} className="glass rounded-3xl p-8 ring-gradient">
+              <div className="text-5xl font-display font-bold gradient-text">{s.n}</div>
+              <h3 className="mt-3 text-xl font-semibold">{s.t}</h3>
+              <p className="mt-2 text-muted-foreground text-sm leading-relaxed">{s.d}</p>
+            </Reveal>
+          ))}
+        </div>
       </section>
 
       {/* CTA */}
