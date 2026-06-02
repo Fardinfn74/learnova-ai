@@ -6,7 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getProfile } from "@/lib/learnova.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Nova } from "@/components/Nova";
-import { MessageSquare, Target, FileText, Trophy, LogOut, Sparkles, Home, Mic } from "lucide-react";
+import { MessageSquare, Target, FileText, Trophy, LogOut, Sparkles, Home, Mic, Code2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -42,6 +42,7 @@ function AppLayout() {
     { to: "/app/quiz", icon: Target, label: "Quizzes" },
     { to: "/app/battle", icon: Sparkles, label: "Brain Battles" },
     { to: "/app/notes", icon: FileText, label: "Summarizer" },
+    { to: "/app/code-lab", icon: Code2, label: "Code Lab" },
     { to: "/app/rooms", icon: MessageSquare, label: "Study Rooms" },
     { to: "/app/badges", icon: Trophy, label: "Badges" },
   ];

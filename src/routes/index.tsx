@@ -1,14 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Nova } from "@/components/Nova";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Reveal } from "@/hooks/use-reveal";
 import { Sparkles, BookOpen, Code2, Trophy, Languages, FileText, Brain, MessageSquare, Target, Shield, Mic, Swords, Headphones, Users, Pencil, Menu, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -37,6 +33,16 @@ const features = [
 ];
 
 function Landing() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: "ABOUT", to: "/", hash: "about" },
+    { label: "FEATURES", to: "/", hash: "features" },
+    { label: "GUIDE", to: "/", hash: "guide" },
+    { label: "DOCS", to: "/docs" },
+    { label: "CREATED BY", to: "/created-by", color: "text-primary" },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* NAV */}
@@ -51,37 +57,27 @@ function Landing() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold tracking-widest text-muted-foreground">
-            <Link to="/" hash="about" className="hover:text-foreground transition">ABOUT</Link>
-            <Link to="/" hash="features" className="hover:text-foreground transition">FEATURES</Link>
-            <Link to="/" hash="guide" className="hover:text-foreground transition">GUIDE</Link>
-            <Link to="/docs" className="hover:text-foreground transition">DOCS</Link>
-            <Link to="/created-by" className="hover:text-primary transition">CREATED BY</Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                to={link.to as any}
+                hash={link.hash}
+                className={cn("hover:text-foreground transition", link.color)}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
-          {/* Mobile Nav Dropdown */}
-          <div className="md:hidden flex-1 flex justify-center px-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-[10px] font-bold tracking-widest text-muted-foreground bg-muted/40 px-3 py-1.5 rounded-full outline-none">
-                MENU <ChevronDown className="h-3 w-3" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-48 bg-background/95 backdrop-blur-xl border-border/40">
-                <DropdownMenuItem asChild>
-                  <Link to="/" hash="about" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">ABOUT</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/" hash="features" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">FEATURES</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/" hash="guide" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">GUIDE</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/docs" className="w-full cursor-pointer font-bold text-[10px] tracking-widest">DOCS</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/created-by" className="w-full cursor-pointer font-bold text-[10px] tracking-widest text-primary">CREATED BY</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex-1 flex justify-center">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-muted-foreground bg-muted/30 px-4 py-2 rounded-full outline-none transition-all active:scale-95 border border-white/5"
+            >
+              MENU
+              <ChevronDown className={cn("h-3 w-3 transition-transform duration-300", isMenuOpen && "rotate-180")} />
+            </button>
           </div>
 
           <div className="flex items-center gap-2 md:gap-3">
@@ -90,6 +86,28 @@ function Landing() {
               Get started
             </Link>
           </div>
+        </div>
+
+        {/* Mobile Horizontal Bar */}
+        <div
+          className={cn(
+            "md:hidden overflow-hidden transition-all duration-300 ease-in-out border-t border-border/40 bg-background/80 backdrop-blur-2xl",
+            isMenuOpen ? "max-h-16 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+          )}
+        >
+          <nav className="flex items-center gap-8 px-6 py-4 overflow-x-auto no-scrollbar whitespace-nowrap text-[10px] font-bold tracking-[0.2em] text-muted-foreground">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                to={link.to as any}
+                hash={link.hash}
+                onClick={() => setIsMenuOpen(false)}
+                className={cn("hover:text-foreground transition", link.color)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </header>
 
