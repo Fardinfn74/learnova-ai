@@ -91,32 +91,32 @@ function CreatedByPage() {
                 <div className="relative w-full max-w-lg">
                   <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-amber-100/10 to-yellow-400/10 rounded-[2.5rem] blur-2xl" />
 
-                  <div className="relative glass rounded-[2.5rem] p-8 md:p-10 border border-white/20 shadow-2xl backdrop-blur-3xl ring-1 ring-white/20 group hover:ring-amber-200/40 transition-all duration-500">
+                  <div className="relative glass rounded-[2.5rem] p-8 md:p-10 border border-border/50 shadow-2xl backdrop-blur-3xl ring-1 ring-border/50 group hover:ring-primary/40 transition-all duration-500">
                     <div className="space-y-6">
                       {/* Name Section */}
                       <div className="space-y-1.5">
-                        <div className="flex items-center gap-2 text-amber-200/60 text-[10px] font-bold tracking-[0.3em] uppercase">
+                        <div className="flex items-center gap-2 text-primary/60 dark:text-amber-200/60 text-[10px] font-bold tracking-[0.3em] uppercase">
                           <User className="h-3 w-3" />
                           Name
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white group-hover:shimmer-gold transition-all">
+                        <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground dark:text-white group-hover:shimmer-gold transition-all">
                           {member.name}
                         </h2>
-                        <div className="text-[10px] font-bold text-amber-200/40 tracking-[0.2em] uppercase pt-1">
+                        <div className="text-[10px] font-bold text-primary/40 dark:text-amber-200/40 tracking-[0.2em] uppercase pt-1">
                           {member.role}
                         </div>
                       </div>
 
                       {/* About Section */}
                       <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-amber-200/60 text-[10px] font-bold tracking-[0.3em] uppercase">
+                        <div className="flex items-center gap-2 text-primary/60 dark:text-amber-200/60 text-[10px] font-bold tracking-[0.3em] uppercase">
                           <Info className="h-3 w-3" />
                           About
                         </div>
                         <ul className="space-y-2">
                           {member.about.map((item, i) => (
-                            <li key={i} className="flex items-center gap-3 text-white/90 font-medium">
-                              <ArrowRight className="h-4 w-4 text-amber-200/60" />
+                            <li key={i} className="flex items-center gap-3 text-foreground/90 dark:text-white/90 font-medium">
+                              <ArrowRight className="h-4 w-4 text-primary/60 dark:text-amber-200/60" />
                               {item}
                             </li>
                           ))}
@@ -124,16 +124,16 @@ function CreatedByPage() {
                       </div>
 
                       {/* Contact Section */}
-                      <div className="space-y-4 pt-4 border-t border-white/10">
-                        <div className="flex items-center gap-2 text-amber-200/60 text-[10px] font-bold tracking-[0.3em] uppercase">
+                      <div className="space-y-4 pt-4 border-t border-border/50">
+                        <div className="flex items-center gap-2 text-primary/60 dark:text-amber-200/60 text-[10px] font-bold tracking-[0.3em] uppercase">
                           <Send className="h-3 w-3" />
                           Contact
                         </div>
                         <div className="flex flex-wrap items-center gap-4">
                           {member.whatsapp && (
-                            <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-2xl border border-white/10 hover:border-amber-200/30 transition-colors">
-                              <Phone className="h-4 w-4 text-amber-200" />
-                              <span className="font-mono text-sm tracking-tight text-white/80">{member.whatsapp}</span>
+                            <div className="flex items-center gap-3 bg-muted/50 dark:bg-white/5 px-4 py-2 rounded-2xl border border-border dark:border-white/10 hover:border-primary/30 dark:hover:border-amber-200/30 transition-colors">
+                              <Phone className="h-4 w-4 text-primary dark:text-amber-200" />
+                              <span className="font-mono text-sm tracking-tight text-foreground/80 dark:text-white/80">{member.whatsapp}</span>
                             </div>
                           )}
 
@@ -141,12 +141,12 @@ function CreatedByPage() {
                             href={member.instagram}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-3 group/link px-4 py-2 rounded-2xl bg-gradient-to-tr from-[#833ab4]/20 via-[#fd1d1d]/20 to-[#fcb045]/20 border border-white/10 hover:border-white/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(253,29,29,0.3)]"
+                            className="inline-flex items-center gap-3 group/link px-4 py-2 rounded-2xl bg-gradient-to-tr from-[#833ab4]/10 via-[#fd1d1d]/10 to-[#fcb045]/10 dark:from-[#833ab4]/20 dark:via-[#fd1d1d]/20 dark:to-[#fcb045]/20 border border-border/50 dark:border-white/10 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(253,29,29,0.15)]"
                           >
                             <div className="h-6 w-6 rounded-lg bg-gradient-to-tr from-[#833ab4] via-[#fd1d1d] to-[#fcb045] flex items-center justify-center shadow-lg group-hover/link:scale-110 transition-transform group-hover/link:shadow-[0_0_15px_rgba(253,29,29,0.5)]">
                               <Instagram className="h-3.5 w-3.5 text-white" />
                             </div>
-                            <span className="text-white text-sm font-bold group-hover/link:text-amber-200 transition-colors drop-shadow-sm">
+                            <span className="text-foreground dark:text-white text-sm font-bold group-hover/link:text-primary dark:group-hover/link:text-amber-200 transition-colors drop-shadow-sm">
                               Instagram
                             </span>
                           </a>
@@ -163,7 +163,7 @@ function CreatedByPage() {
         <footer className="mt-40 text-center">
           <Link
             to="/"
-            className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 focus:outline-none"
+            className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-foreground dark:text-white transition-all duration-200 bg-muted/50 dark:bg-white/5 border border-border dark:border-white/10 rounded-full hover:bg-muted dark:hover:bg-white/10 hover:border-border/80 dark:hover:border-white/20 focus:outline-none"
           >
             <span className="mr-2">←</span> Back to Home
             <div className="absolute -inset-1 bg-gradient-to-r from-amber-200 to-yellow-500 rounded-full blur opacity-0 group-hover:opacity-20 transition duration-500" />

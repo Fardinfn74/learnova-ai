@@ -73,7 +73,7 @@ function Landing() {
           <div className="md:hidden flex-1 flex justify-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-muted-foreground bg-muted/30 px-4 py-2 rounded-full outline-none transition-all active:scale-95 border border-white/5"
+              className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-muted-foreground bg-muted/30 px-4 py-2 rounded-full outline-none transition-all active:scale-95 border border-border/50"
             >
               MENU
               <ChevronDown className={cn("h-3 w-3 transition-transform duration-300", isMenuOpen && "rotate-180")} />
@@ -144,8 +144,8 @@ function Landing() {
 
           <div className="relative flex items-center justify-center">
             <div className="absolute inset-0 rounded-full gradient-hero opacity-20 blur-3xl animate-pulse-glow" />
-            <div className="absolute h-80 w-80 rounded-full border border-white/30 animate-spin-slow" />
-            <div className="absolute h-96 w-96 rounded-full border border-white/20 animate-spin-slow" style={{ animationDirection: "reverse" }} />
+            <div className="absolute h-80 w-80 rounded-full border border-primary/10 dark:border-white/30 animate-spin-slow" />
+            <div className="absolute h-96 w-96 rounded-full border border-primary/5 dark:border-white/20 animate-spin-slow" style={{ animationDirection: "reverse" }} />
             <Nova size={360} priority />
             {/* Floating chips */}
             <div className="absolute top-4 left-4 glass rounded-2xl px-3 py-2 text-xs font-medium animate-float">📚 Math chapter 4</div>
