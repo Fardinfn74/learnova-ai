@@ -55,31 +55,31 @@
   --radius: 1rem;
 
   /* Light mode — soft, vibrant gradient surface */
-  --background: oklch(0.99 0.005 280);
-  --foreground: oklch(0.18 0.04 280);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.04 280);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.04 280);
+  --background: oklch(0.98 0.01 280);
+  --foreground: oklch(0.15 0.03 280);
+  --card: oklch(0.99 0.005 280);
+  --card-foreground: oklch(0.15 0.03 280);
+  --popover: oklch(0.99 0.005 280);
+  --popover-foreground: oklch(0.15 0.03 280);
 
   /* Primary = vibrant purple */
-  --primary: oklch(0.58 0.24 295);
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: oklch(0.55 0.22 295);
+  --primary-foreground: oklch(0.99 0.005 280);
 
   /* Secondary = cyan accent */
-  --secondary: oklch(0.95 0.04 230);
-  --secondary-foreground: oklch(0.25 0.08 270);
+  --secondary: oklch(0.92 0.03 230);
+  --secondary-foreground: oklch(0.2 0.05 270);
 
-  --muted: oklch(0.96 0.012 280);
-  --muted-foreground: oklch(0.5 0.04 280);
-  --accent: oklch(0.94 0.06 200);
-  --accent-foreground: oklch(0.22 0.08 270);
+  --muted: oklch(0.94 0.02 280);
+  --muted-foreground: oklch(0.4 0.03 280);
+  --accent: oklch(0.9 0.05 200);
+  --accent-foreground: oklch(0.2 0.05 270);
 
-  --destructive: oklch(0.62 0.24 25);
+  --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(0.92 0.015 280);
-  --input: oklch(0.94 0.012 280);
+  --border: oklch(0.85 0.02 280);
+  --input: oklch(0.9 0.02 280);
   --ring: oklch(0.58 0.24 295);
 
   /* Nova brand */
@@ -94,7 +94,7 @@
 
   --gradient-hero: linear-gradient(135deg, oklch(0.7 0.22 295) 0%, oklch(0.75 0.2 240) 50%, oklch(0.78 0.2 200) 100%);
   --gradient-nova: linear-gradient(135deg, oklch(0.72 0.24 305) 0%, oklch(0.78 0.2 220) 100%);
-  --gradient-card: linear-gradient(135deg, oklch(1 0 0 / 0.9) 0%, oklch(0.97 0.02 290 / 0.7) 100%);
+  --gradient-card: linear-gradient(135deg, oklch(1 0 0 / 0.95) 0%, oklch(0.96 0.02 290 / 0.85) 100%);
   --shadow-glow: 0 20px 60px -20px oklch(0.6 0.25 295 / 0.45);
   --shadow-soft: 0 8px 32px -8px oklch(0.4 0.1 280 / 0.18);
 
