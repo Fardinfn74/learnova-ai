@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { Reveal } from "@/hooks/use-reveal";
+import { Editor } from "@monaco-editor/react";
+import { useTheme } from "@/hooks/use-theme";
+import ReactMarkdown from "react-markdown";
 import {
   Code2,
   Play,
@@ -40,6 +43,7 @@ function CodeLabPage() {
   const [novaFeedback, setNovaFeedback] = useState<string | null>(null);
   const [isNovaThinking, setIsNovaThinking] = useState(false);
   const awardXpFn = useServerFn(awardXp);
+  const { theme } = useTheme();
 
   const runCode = async () => {
     setIsRunning(true);
@@ -48,29 +52,33 @@ function CodeLabPage() {
     setNovaFeedback(null);
 
     try {
-      // For C execution, we use the public Piston API which is free and reliable
-      const response = await fetch("https://emkc.org/api/v2/piston/execute", {
+      // Migrated to Wandbox API as Piston is now restricted
+      const response = await fetch("https://wandbox.org/api/compile.json", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          language: "c",
-          version: "10.2.0",
-          files: [{ content: code }],
+          compiler: "gcc-head",
+          code: code,
+          save: false,
         }),
       });
 
       const data = await response.json();
 
-      if (data.run) {
-        if (data.run.stderr) {
-          setError(data.run.stderr);
-          askNovaForHelp(code, data.run.stderr);
+      if (data.program_message || data.program_output || data.program_error || data.compiler_error) {
+        if (data.compiler_error || data.program_error) {
+          const errText = data.compiler_error || data.program_error;
+          setError(errText);
+          askNovaForHelp(code, errText);
         } else {
-          setOutput(data.run.stdout || "(Success: No output)");
+          setOutput(data.program_output || data.program_message || "(Success: No output)");
           if (code !== C_STARTER) {
              awardXpFn({ amount: 15, reason: "Executed perfect C code" });
              toast.success("Correct! +15 XP earned.");
           }
         }
+      } else {
+         setError("Unknown execution error occurred.");
       }
     } catch (err) {
       setError("Failed to connect to the execution server. Please check your internet.");
@@ -194,13 +202,28 @@ function CodeLabPage() {
           <div className="flex items-center gap-2 px-4 py-2 border-b border-border/40 bg-muted/20 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
             <Code2 className="h-3 w-3" /> main.c
           </div>
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            spellCheck={false}
-            className="flex-1 p-6 font-mono text-sm bg-transparent outline-none resize-none leading-relaxed selection:bg-primary/20"
-            placeholder="Write your C code here..."
-          />
+          <div className={cn("flex-1 relative pt-4", theme === "dark" ? "bg-[#1e1e1e]" : "bg-background")}>
+            <Editor
+              height="100%"
+              defaultLanguage="c"
+              value={code}
+              theme={theme === "dark" ? "vs-dark" : "light"}
+              onChange={(v) => setCode(v || "")}
+              options={{
+                fontSize: 14,
+                fontFamily: "var(--font-mono)",
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                padding: { top: 16, bottom: 16 },
+                cursorSmoothCaretAnimation: "on",
+                smoothScrolling: true,
+                lineNumbers: "on",
+                roundedSelection: true,
+                contextmenu: true,
+                automaticLayout: true,
+              }}
+            />
+          </div>
           {/* Quick symbols for mobile */}
           <div className="flex md:hidden items-center gap-1 p-2 bg-muted/40 border-t border-border/40 overflow-x-auto no-scrollbar">
             {['{', '}', '(', ')', ';', '"', '&', '*', '#', '<', '>', '\\n'].map(sym => (
@@ -257,13 +280,16 @@ function CodeLabPage() {
                     <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest mb-3 ml-6">
                       <Brain className="h-3 w-3" /> Nova Analysis
                     </div>
-                    <div className="text-xs leading-relaxed text-foreground/90 prose prose-invert prose-p:my-1 prose-sm">
+                    <div className={cn(
+                      "text-xs leading-relaxed text-foreground/90 prose prose-p:my-1 prose-sm prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10",
+                      theme === "dark" ? "prose-invert" : ""
+                    )}>
                       {isNovaThinking && !novaFeedback && (
                         <div className="flex items-center gap-2 text-muted-foreground italic">
                            Thinking...
                         </div>
                       )}
-                      {novaFeedback}
+                      <ReactMarkdown>{novaFeedback || ""}</ReactMarkdown>
                     </div>
                   </div>
                 </Reveal>
