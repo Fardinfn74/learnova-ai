@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Nova } from "@/components/Nova";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Reveal } from "@/hooks/use-reveal";
-import { Sparkles, BookOpen, Code2, Trophy, Languages, FileText, Brain, MessageSquare, Target, Shield, Mic, Swords, Headphones, Users, Pencil, Menu, ChevronDown } from "lucide-react";
+import { Sparkles, BookOpen, Code2, Trophy, Languages, FileText, Brain, MessageSquare, Target, Shield, Mic, Swords, Headphones, Users, Pencil, Menu, ChevronDown, GraduationCap, Gamepad2, CreditCard, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { startDemoTrial } from "@/lib/demo-mode";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -17,28 +18,34 @@ export const Route = createFileRoute("/")({
 });
 
 const features = [
-  { icon: Brain, title: "Personalized paths", desc: "Nova adapts to your level and goals every session." },
-  { icon: Languages, title: "Bangla • Banglish • English", desc: "Chat in any mix — Nova understands all three." },
-  { icon: MessageSquare, title: "Step-by-step explanations", desc: "Concepts broken down until they truly click." },
-  { icon: Code2, title: "Coding + debugging", desc: "Live code help with explanations, not just answers." },
-  { icon: Target, title: "Quizzes & mock tests", desc: "AI-generated quizzes that target your weak spots." },
-  { icon: BookOpen, title: "PDF & note summaries", desc: "Upload notes — get summaries + flashcards instantly." },
-  { icon: Mic, title: "Voice chat with Nova", desc: "Talk out loud — Nova listens and replies with a warm voice." },
-  { icon: Swords, title: "Multiplayer Battles", desc: "Compete in live quiz battles with your friends." },
-  { icon: Headphones, title: "AI Podcasts", desc: "Turn any topic into an engaging two-host podcast." },
-  { icon: Users, title: "Study Rooms", desc: "Collaborate and learn with friends in real-time." },
-  { icon: Pencil, title: "Draw to Learn", desc: "Draw math or diagrams and get instant AI solutions." },
-  { icon: Trophy, title: "XP, levels & badges", desc: "Earn rewards as you learn. Streaks keep you going." },
-  { icon: Shield, title: "Safe & student-friendly", desc: "Responses tuned for learners. Always supportive." },
+  { icon: GraduationCap, title: "Interactive Kids Courses", desc: "Abacus finger math, phonics, Bangla barnamala & coding." },
+  { icon: Gamepad2, title: "Educational Mini-Games", desc: "Speed Math Sprint, word puzzles & mental flash challenges." },
+  { icon: BookOpen, title: "Animated Library", desc: "Illustrated storybooks, workbooks & illustrated study notes." },
+  { icon: Brain, title: "Personalized AI Paths", desc: "Nova adapts to your level and goals every single session." },
+  { icon: Languages, title: "Bangla • Banglish • English", desc: "Chat naturally in any mix — Nova understands all three." },
+  { icon: Code2, title: "Code Lab Sandbox", desc: "Live C, Python, JS coding with explanations & debugging." },
+  { icon: Target, title: "Adaptive Quizzes", desc: "AI-generated mock tests that target weak spots." },
+  { icon: Mic, title: "Voice Chat with Nova", desc: "Speak out loud in Bangla or English — Nova replies warmly." },
+  { icon: Headphones, title: "AI Audio Podcasts", desc: "Convert notes and documents into engaging audio podcasts." },
+  { icon: CreditCard, title: "Flexible Plans (BDT / USD)", desc: "70% BD and 30% International pricing tiers." },
+  { icon: Trophy, title: "XP, Levels & Badges", desc: "Earn rewards as you learn. Streaks keep kids motivated." },
+  { icon: Shield, title: "Safe & Student-Friendly", desc: "Child-safe AI guardrails. supportive environment." },
 ];
 
 function Landing() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleStartJudgeDemo = () => {
+    startDemoTrial();
+    navigate({ to: "/app/dashboard" });
+  };
 
   const navLinks = [
     { label: "ABOUT", to: "/", hash: "about" },
     { label: "FEATURES", to: "/", hash: "features" },
-    { label: "GUIDE", to: "/", hash: "guide" },
+    { label: "COURSES & GAMES", to: "/app/courses" },
+    { label: "PRICING", to: "/app/pricing" },
     { label: "DOCS", to: "/docs" },
     { label: "CREATED BY", to: "/created-by", color: "text-primary" },
   ];
@@ -82,6 +89,14 @@ function Landing() {
 
           <div className="flex items-center gap-2 md:gap-3">
             <ThemeToggle />
+            <button
+              onClick={handleStartJudgeDemo}
+              className="text-xs md:text-sm font-semibold px-3 md:px-4 py-2 rounded-full border border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-300 transition whitespace-nowrap flex items-center gap-1.5"
+              title="Instant 3-Day Unlocked Access for Judges"
+            >
+              <Play className="h-3.5 w-3.5 fill-current" />
+              <span>Judge Demo</span>
+            </button>
             <Link to="/auth" className="text-xs md:text-sm font-semibold px-4 md:px-5 py-2 rounded-full gradient-hero text-primary-foreground shadow-glow hover:scale-105 transition whitespace-nowrap">
               Get started
             </Link>
@@ -128,10 +143,17 @@ function Landing() {
               Coding help, step-by-step solutions, quizzes, summaries, and XP-based progress. All in one place.
             </p>
             <div className="flex flex-wrap items-center gap-3">
-              <Link to="/auth" className="rounded-full gradient-hero px-7 py-3.5 font-semibold text-primary-foreground shadow-glow hover:scale-105 transition">
+              <button
+                onClick={handleStartJudgeDemo}
+                className="rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-7 py-3.5 font-bold text-white shadow-glow hover:scale-105 transition flex items-center gap-2"
+              >
+                <Play className="h-5 w-5 fill-current" />
+                <span>Judge 3-Day Free Trial Demo</span>
+              </button>
+              <Link to="/auth" className="rounded-full gradient-hero px-6 py-3.5 font-semibold text-primary-foreground shadow-glow hover:scale-105 transition">
                 Start learning free
               </Link>
-              <a href="#features" className="rounded-full glass px-7 py-3.5 font-semibold hover:scale-105 transition">
+              <a href="#features" className="rounded-full glass px-6 py-3.5 font-semibold hover:scale-105 transition">
                 Explore features
               </a>
             </div>

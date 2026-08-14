@@ -1,14 +1,15 @@
 import { createFileRoute, Link, Outlet, useNavigate, useLocation } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getProfile } from "@/lib/learnova.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Nova } from "@/components/Nova";
-import { MessageSquare, Target, FileText, Trophy, LogOut, Sparkles, Home, Mic, Code2 } from "lucide-react";
+import { MessageSquare, Target, FileText, Trophy, LogOut, Sparkles, Home, Mic, Code2, GraduationCap, BookOpen, Gamepad2, CreditCard, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { isDemoActive, clearDemoTrial, getDemoDaysRemaining, DEMO_USER_PROFILE } from "@/lib/demo-mode";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
@@ -19,22 +20,43 @@ function AppLayout() {
   const nav = useNavigate();
   const loc = useLocation();
   const fetchProfile = useServerFn(getProfile);
+
+  const [demoActive, setDemoActive] = useState(() => isDemoActive());
+
+  useEffect(() => {
+    const active = isDemoActive();
+    setDemoActive(active);
+    if (!loading && !user && !active) {
+      nav({ to: "/auth" });
+    }
+  }, [user, loading, nav]);
+
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: () => fetchProfile(),
     enabled: !!user,
   });
 
-  useEffect(() => { if (!loading && !user) nav({ to: "/auth" }); }, [user, loading, nav]);
-  if (loading || !user) return <div className="min-h-screen grid place-items-center"><Nova size={120} /></div>;
+  if (loading && !demoActive) {
+    return <div className="min-h-screen grid place-items-center"><Nova size={120} /></div>;
+  }
 
-  const xp = profile?.xp ?? 0;
-  const level = profile?.level ?? 1;
+  if (!user && !demoActive) {
+    return <div className="min-h-screen grid place-items-center"><Nova size={120} /></div>;
+  }
+
+  const activeProfile = profile || (demoActive ? DEMO_USER_PROFILE : null);
+  const xp = activeProfile?.xp ?? 0;
+  const level = activeProfile?.level ?? 1;
   const xpForNext = (level * level) * 50;
   const progressPct = Math.min(100, (xp / xpForNext) * 100);
+  const remaining = getDemoDaysRemaining();
 
   const nav_items = [
     { to: "/app/dashboard", icon: Home, label: "Dashboard" },
+    { to: "/app/courses", icon: GraduationCap, label: "Courses" },
+    { to: "/app/library", icon: BookOpen, label: "Library" },
+    { to: "/app/games", icon: Gamepad2, label: "Games" },
     { to: "/app/chat", icon: MessageSquare, label: "Chat with Nova" },
     { to: "/app/voice", icon: Mic, label: "Voice with Nova" },
     { to: "/app/draw", icon: Sparkles, label: "Draw to Learn" },
@@ -45,6 +67,7 @@ function AppLayout() {
     { to: "/app/code-lab", icon: Code2, label: "Code Lab" },
     { to: "/app/rooms", icon: MessageSquare, label: "Study Rooms" },
     { to: "/app/badges", icon: Trophy, label: "Badges" },
+    { to: "/app/pricing", icon: CreditCard, label: "Pricing & Plans" },
   ];
 
   return (
@@ -61,7 +84,7 @@ function AppLayout() {
           <div className="flex items-center gap-3">
             <Nova size={56} float={false} glow={false}/>
             <div>
-              <div className="text-xs text-muted-foreground">Level</div>
+              <div className="text-xs text-muted-foreground">{demoActive ? "Judge Demo" : "Level"}</div>
               <div className="font-bold text-xl">{level}</div>
             </div>
           </div>
@@ -71,10 +94,10 @@ function AppLayout() {
           <div className="mt-1.5 flex justify-between text-xs text-muted-foreground">
             <span>{xp} XP</span><span>{xpForNext}</span>
           </div>
-          <div className="mt-2 text-xs">🔥 {profile?.current_streak ?? 0} day streak</div>
+          <div className="mt-2 text-xs">🔥 {activeProfile?.current_streak ?? 0} day streak</div>
         </div>
 
-        <nav className="mt-6 space-y-1 flex-1">
+        <nav className="mt-6 space-y-1 flex-1 overflow-y-auto no-scrollbar">
           {nav_items.map(i => {
             const active = loc.pathname.startsWith(i.to);
             return (
@@ -89,16 +112,44 @@ function AppLayout() {
         </nav>
 
         <div className="flex items-center justify-between gap-2 mt-2">
-          <button onClick={async () => { await supabase.auth.signOut(); nav({ to: "/" }); }}
+          <button onClick={async () => {
+            if (demoActive) {
+              clearDemoTrial();
+              setDemoActive(false);
+            }
+            await supabase.auth.signOut();
+            nav({ to: "/" });
+          }}
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-sidebar-accent flex-1">
-            <LogOut className="h-4 w-4"/> Sign out
+            <LogOut className="h-4 w-4"/> {demoActive ? "Exit Demo" : "Sign out"}
           </button>
           <ThemeToggle />
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0 pb-20 md:pb-0 h-full overflow-hidden">
-        <Outlet />
+      <main className="flex-1 min-w-0 pb-20 md:pb-0 h-full flex flex-col overflow-hidden">
+        {demoActive && (
+          <div className="bg-gradient-to-r from-amber-500/20 via-primary/20 to-amber-500/20 border-b border-amber-500/30 px-4 py-2 text-xs md:text-sm font-medium flex items-center justify-between gap-2 text-foreground shrink-0 backdrop-blur-md">
+            <div className="flex items-center gap-2 truncate">
+              <ShieldCheck className="h-4 w-4 text-amber-500 shrink-0" />
+              <span className="font-semibold text-amber-600 dark:text-amber-400">Judge Review Trial Active:</span>
+              <span className="truncate">Full access unlocked without login/subscription ({remaining.days}d {remaining.hours}h remaining)</span>
+            </div>
+            <button
+              onClick={() => {
+                clearDemoTrial();
+                setDemoActive(false);
+                nav({ to: "/" });
+              }}
+              className="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-600 dark:text-amber-300 font-bold px-2.5 py-1 rounded-full border border-amber-500/40 transition shrink-0"
+            >
+              Exit Demo
+            </button>
+          </div>
+        )}
+        <div className="flex-1 overflow-y-auto">
+          <Outlet />
+        </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
