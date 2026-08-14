@@ -15,18 +15,6 @@ export default defineConfig(({ command }) => ({
     host: "::",
     port: 8080,
   },
-  // Aggressively force Vite's SSR bundler to merge these sub-dependencies directly
-  ssr: {
-    noExternal: [
-      "tslib", 
-      "@supabase/supabase-js", 
-      "@supabase/auth-js", 
-      "@supabase/postgrest-js", 
-      "@supabase/functions-js", 
-      "@supabase/storage-js", 
-      "@supabase/realtime-js"
-    ],
-  },
   plugins: [
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tailwindcss(),
