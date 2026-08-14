@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getProfile, listBadges, xpHistory } from "@/lib/learnova.functions";
 import { Nova } from "@/components/Nova";
-import { MessageSquare, Target, FileText, Trophy, Flame, Zap } from "lucide-react";
+import { MessageSquare, Target, FileText, Trophy, Flame, Zap, GraduationCap, BookOpen, Gamepad2, CreditCard, Sparkles } from "lucide-react";
+import { isDemoActive, DEMO_USER_PROFILE } from "@/lib/demo-mode";
 
 export const Route = createFileRoute("/app/dashboard")({ component: Dashboard });
 
@@ -11,15 +12,23 @@ function Dashboard() {
   const p = useServerFn(getProfile);
   const b = useServerFn(listBadges);
   const x = useServerFn(xpHistory);
-  const { data: profile } = useQuery({ queryKey: ["profile"], queryFn: () => p() });
-  const { data: badges } = useQuery({ queryKey: ["badges"], queryFn: () => b() });
-  const { data: events } = useQuery({ queryKey: ["xp"], queryFn: () => x() });
+  const isDemo = isDemoActive();
+
+  const { data: profileData } = useQuery({ queryKey: ["profile"], queryFn: () => p(), enabled: !isDemo });
+  const { data: badges } = useQuery({ queryKey: ["badges"], queryFn: () => b(), enabled: !isDemo });
+  const { data: events } = useQuery({ queryKey: ["xp"], queryFn: () => x(), enabled: !isDemo });
+
+  const activeProfile = profileData || (isDemo ? DEMO_USER_PROFILE : null);
 
   const tiles = [
-    { to: "/app/chat", icon: MessageSquare, title: "Chat with Nova", desc: "Ask anything, get step-by-step help.", color: "from-purple-500 to-pink-500" },
-    { to: "/app/quiz", icon: Target, title: "Take a quiz", desc: "AI-generated mock tests in seconds.", color: "from-blue-500 to-cyan-500" },
-    { to: "/app/notes", icon: FileText, title: "Summarize notes", desc: "Paste text → get summary + flashcards.", color: "from-amber-500 to-rose-500" },
-    { to: "/app/badges", icon: Trophy, title: "Your badges", desc: `${badges?.length ?? 0} unlocked`, color: "from-emerald-500 to-teal-500" },
+    { to: "/app/courses", icon: GraduationCap, title: "Interactive Courses", desc: "Abacus, Phonics, Coding & Language", color: "from-amber-500 to-orange-500" },
+    { to: "/app/library", icon: BookOpen, title: "Animated Library", desc: "Stories, workbooks & illustrated guides", color: "from-emerald-500 to-teal-500" },
+    { to: "/app/games", icon: Gamepad2, title: "Learning Games", desc: "Math Sprint, Word Puzzles & Abacus Flash", color: "from-indigo-500 to-purple-500" },
+    { to: "/app/chat", icon: MessageSquare, title: "Chat with Nova", desc: "Socratic AI tutor in Bangla & English", color: "from-purple-500 to-pink-500" },
+    { to: "/app/quiz", icon: Target, title: "Adaptive Quizzes", desc: "AI mock tests & instant feedback", color: "from-blue-500 to-cyan-500" },
+    { to: "/app/notes", icon: FileText, title: "Summarizer & PDF", desc: "Notes to summaries + flashcards", color: "from-amber-500 to-rose-500" },
+    { to: "/app/pricing", icon: CreditCard, title: "Plans & Pricing", desc: "Flexible subscriptions (BDT / USD)", color: "from-rose-500 to-pink-600" },
+    { to: "/app/badges", icon: Trophy, title: "Badges & Streaks", desc: `${badges?.length ?? (isDemo ? 3 : 0)} unlocked`, color: "from-teal-500 to-cyan-600" },
   ];
 
   return (
@@ -27,12 +36,15 @@ function Dashboard() {
       <div className="glass rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-6 shadow-glow">
         <Nova size={140} />
         <div className="flex-1 text-center md:text-left">
-          <h1 className="text-3xl md:text-4xl font-bold">Welcome back, <span className="gradient-text">{profile?.display_name ?? "learner"}</span>! ✨</h1>
-          <p className="text-muted-foreground mt-1">Ready to level up today? I've got quizzes, summaries, and code help waiting.</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-2">
+            <Sparkles className="h-3.5 w-3.5" /> Learnova Kids & Student Platform
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold">Welcome back, <span className="gradient-text">{activeProfile?.display_name ?? "Learner"}</span>! ✨</h1>
+          <p className="text-muted-foreground mt-1">Explore Abacus courses, animated storybooks, speed math games, and Nova AI chat.</p>
           <div className="mt-4 flex flex-wrap gap-3 justify-center md:justify-start">
-            <Stat icon={Zap} label="XP" value={profile?.xp ?? 0} />
-            <Stat icon={Trophy} label="Level" value={profile?.level ?? 1} />
-            <Stat icon={Flame} label="Streak" value={`${profile?.current_streak ?? 0}d`} />
+            <Stat icon={Zap} label="XP" value={activeProfile?.xp ?? 1250} />
+            <Stat icon={Trophy} label="Level" value={activeProfile?.level ?? 5} />
+            <Stat icon={Flame} label="Streak" value={`${activeProfile?.current_streak ?? 3}d`} />
           </div>
         </div>
       </div>

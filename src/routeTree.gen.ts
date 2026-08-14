@@ -17,10 +17,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppVoiceRouteImport } from './routes/app.voice'
 import { Route as AppRoomsRouteImport } from './routes/app.rooms'
 import { Route as AppQuizRouteImport } from './routes/app.quiz'
+import { Route as AppPricingRouteImport } from './routes/app.pricing'
 import { Route as AppPodcastRouteImport } from './routes/app.podcast'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
+import { Route as AppLibraryRouteImport } from './routes/app.library'
+import { Route as AppGamesRouteImport } from './routes/app.games'
 import { Route as AppDrawRouteImport } from './routes/app.draw'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppCoursesRouteImport } from './routes/app.courses'
 import { Route as AppCodeLabRouteImport } from './routes/app.code-lab'
 import { Route as AppChatRouteImport } from './routes/app.chat'
 import { Route as AppBattleRouteImport } from './routes/app.battle'
@@ -70,6 +74,11 @@ const AppQuizRoute = AppQuizRouteImport.update({
   path: '/quiz',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPricingRoute = AppPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPodcastRoute = AppPodcastRouteImport.update({
   id: '/podcast',
   path: '/podcast',
@@ -80,6 +89,16 @@ const AppNotesRoute = AppNotesRouteImport.update({
   path: '/notes',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLibraryRoute = AppLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGamesRoute = AppGamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDrawRoute = AppDrawRouteImport.update({
   id: '/draw',
   path: '/draw',
@@ -88,6 +107,11 @@ const AppDrawRoute = AppDrawRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCoursesRoute = AppCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCodeLabRoute = AppCodeLabRouteImport.update({
@@ -143,10 +167,14 @@ export interface FileRoutesByFullPath {
   '/app/battle': typeof AppBattleRoute
   '/app/chat': typeof AppChatRoute
   '/app/code-lab': typeof AppCodeLabRoute
+  '/app/courses': typeof AppCoursesRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/draw': typeof AppDrawRoute
+  '/app/games': typeof AppGamesRoute
+  '/app/library': typeof AppLibraryRoute
   '/app/notes': typeof AppNotesRoute
   '/app/podcast': typeof AppPodcastRoute
+  '/app/pricing': typeof AppPricingRoute
   '/app/quiz': typeof AppQuizRoute
   '/app/rooms': typeof AppRoomsRoute
   '/app/voice': typeof AppVoiceRoute
@@ -165,10 +193,14 @@ export interface FileRoutesByTo {
   '/app/battle': typeof AppBattleRoute
   '/app/chat': typeof AppChatRoute
   '/app/code-lab': typeof AppCodeLabRoute
+  '/app/courses': typeof AppCoursesRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/draw': typeof AppDrawRoute
+  '/app/games': typeof AppGamesRoute
+  '/app/library': typeof AppLibraryRoute
   '/app/notes': typeof AppNotesRoute
   '/app/podcast': typeof AppPodcastRoute
+  '/app/pricing': typeof AppPricingRoute
   '/app/quiz': typeof AppQuizRoute
   '/app/rooms': typeof AppRoomsRoute
   '/app/voice': typeof AppVoiceRoute
@@ -188,10 +220,14 @@ export interface FileRoutesById {
   '/app/battle': typeof AppBattleRoute
   '/app/chat': typeof AppChatRoute
   '/app/code-lab': typeof AppCodeLabRoute
+  '/app/courses': typeof AppCoursesRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/draw': typeof AppDrawRoute
+  '/app/games': typeof AppGamesRoute
+  '/app/library': typeof AppLibraryRoute
   '/app/notes': typeof AppNotesRoute
   '/app/podcast': typeof AppPodcastRoute
+  '/app/pricing': typeof AppPricingRoute
   '/app/quiz': typeof AppQuizRoute
   '/app/rooms': typeof AppRoomsRoute
   '/app/voice': typeof AppVoiceRoute
@@ -212,10 +248,14 @@ export interface FileRouteTypes {
     | '/app/battle'
     | '/app/chat'
     | '/app/code-lab'
+    | '/app/courses'
     | '/app/dashboard'
     | '/app/draw'
+    | '/app/games'
+    | '/app/library'
     | '/app/notes'
     | '/app/podcast'
+    | '/app/pricing'
     | '/app/quiz'
     | '/app/rooms'
     | '/app/voice'
@@ -234,10 +274,14 @@ export interface FileRouteTypes {
     | '/app/battle'
     | '/app/chat'
     | '/app/code-lab'
+    | '/app/courses'
     | '/app/dashboard'
     | '/app/draw'
+    | '/app/games'
+    | '/app/library'
     | '/app/notes'
     | '/app/podcast'
+    | '/app/pricing'
     | '/app/quiz'
     | '/app/rooms'
     | '/app/voice'
@@ -256,10 +300,14 @@ export interface FileRouteTypes {
     | '/app/battle'
     | '/app/chat'
     | '/app/code-lab'
+    | '/app/courses'
     | '/app/dashboard'
     | '/app/draw'
+    | '/app/games'
+    | '/app/library'
     | '/app/notes'
     | '/app/podcast'
+    | '/app/pricing'
     | '/app/quiz'
     | '/app/rooms'
     | '/app/voice'
@@ -336,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppQuizRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/pricing': {
+      id: '/app/pricing'
+      path: '/pricing'
+      fullPath: '/app/pricing'
+      preLoaderRoute: typeof AppPricingRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/podcast': {
       id: '/app/podcast'
       path: '/podcast'
@@ -350,6 +405,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/library': {
+      id: '/app/library'
+      path: '/library'
+      fullPath: '/app/library'
+      preLoaderRoute: typeof AppLibraryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/games': {
+      id: '/app/games'
+      path: '/games'
+      fullPath: '/app/games'
+      preLoaderRoute: typeof AppGamesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/draw': {
       id: '/app/draw'
       path: '/draw'
@@ -362,6 +431,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/app/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/courses': {
+      id: '/app/courses'
+      path: '/courses'
+      fullPath: '/app/courses'
+      preLoaderRoute: typeof AppCoursesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/code-lab': {
@@ -428,10 +504,14 @@ interface AppRouteChildren {
   AppBattleRoute: typeof AppBattleRoute
   AppChatRoute: typeof AppChatRoute
   AppCodeLabRoute: typeof AppCodeLabRoute
+  AppCoursesRoute: typeof AppCoursesRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDrawRoute: typeof AppDrawRoute
+  AppGamesRoute: typeof AppGamesRoute
+  AppLibraryRoute: typeof AppLibraryRoute
   AppNotesRoute: typeof AppNotesRoute
   AppPodcastRoute: typeof AppPodcastRoute
+  AppPricingRoute: typeof AppPricingRoute
   AppQuizRoute: typeof AppQuizRoute
   AppRoomsRoute: typeof AppRoomsRoute
   AppVoiceRoute: typeof AppVoiceRoute
@@ -443,10 +523,14 @@ const AppRouteChildren: AppRouteChildren = {
   AppBattleRoute: AppBattleRoute,
   AppChatRoute: AppChatRoute,
   AppCodeLabRoute: AppCodeLabRoute,
+  AppCoursesRoute: AppCoursesRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDrawRoute: AppDrawRoute,
+  AppGamesRoute: AppGamesRoute,
+  AppLibraryRoute: AppLibraryRoute,
   AppNotesRoute: AppNotesRoute,
   AppPodcastRoute: AppPodcastRoute,
+  AppPricingRoute: AppPricingRoute,
   AppQuizRoute: AppQuizRoute,
   AppRoomsRoute: AppRoomsRoute,
   AppVoiceRoute: AppVoiceRoute,
