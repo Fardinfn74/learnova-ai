@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Numbers & Counting - Kids Math Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Hidden SVG Icons Library -->
+  <svg style="display: none;">
+    <symbol id="icon-fullscreen" viewBox="0 0 24 24">
+      <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+    </symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </symbol>
+    <symbol id="icon-music" viewBox="0 0 24 24">
+      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+    </symbol>
+    <symbol id="icon-restart" viewBox="0 0 24 24">
+      <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+    </symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24">
+      <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+    </symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24">
+      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </symbol>
+    <symbol id="icon-star-gold" viewBox="0 0 24 24">
+      <path fill="#ffd21f" stroke="#e09e07" stroke-width="1.2" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+    </symbol>
+  </svg>
+
+  <div id="game-wrapper">
+    <div id="game-screen">
+      <!-- Confetti and Star Canvas -->
+      <canvas id="fx-canvas"></canvas>
+
+      <!-- Top Bar: Home, Ribbon Banner, Star Pill -->
+      <header class="top-bar">
+        <button id="btn-home" class="btn-round btn-blue" title="Main Menu">
+          <svg><use href="#icon-home"/></svg>
+        </button>
+
+        <div class="banner-ribbon-container">
+          <div class="ribbon">
+            <h1 id="ribbon-title">COUNT OBJECTS</h1>
+          </div>
+          <div class="ribbon-sub" id="ribbon-subtitle">Count the objects.</div>
+        </div>
+
+        <div class="star-pill">
+          <svg class="star-icon"><use href="#icon-star-gold"/></svg>
+          <span class="star-score" id="star-score-val">150</span>
+        </div>
+      </header>
+
+      <!-- Bottom Controls -->
+      <div class="bottom-controls-left">
+        <button id="btn-sound" class="btn-round btn-green" title="Toggle Sound / Music">
+          <svg><use href="#icon-music"/></svg>
+        </button>
+        <button id="btn-fullscreen" class="btn-round btn-blue" title="Toggle Fullscreen">
+          <svg><use href="#icon-fullscreen"/></svg>
+        </button>
+        <button id="btn-restart" class="btn-round btn-purple" title="Restart Question">
+          <svg><use href="#icon-restart"/></svg>
+        </button>
+      </div>
+
+      <div class="bottom-controls-right">
+        <button id="btn-next" class="btn-round btn-orange" title="Next Level">
+          <svg><use href="#icon-arrow-right"/></svg>
+        </button>
+        <button id="btn-prev" class="btn-round btn-pink" title="Previous Level">
+          <svg><use href="#icon-arrow-left"/></svg>
+        </button>
+      </div>
+
+      <!-- Mascot Character (Rabbit) -->
+      <div id="mascot-container" title="Click me!">
+        <div id="mascot-bubble" class="mascot-bubble">Hi there!</div>
+        <img id="mascot-img" src="./Mascot/PNG%20Sequence/Idle/Idle_0.png" alt="Bunny Mascot">
+      </div>
+
+      <!-- =================================================== -->
+      <!-- SCREEN 0: MAIN MENU HUB                             -->
+      <!-- =================================================== -->
+      <div id="menu-view" class="game-view active">
+        <div class="menu-title-banner">
+          <div class="menu-title-main">
+            <span>NUMBERS</span>
+            <span style="color: #683fa2; font-size: 54px;">&</span>
+            <span>COUNTING</span>
+          </div>
+          <div class="menu-title-sub-ribbon">SELECT A GAME</div>
+        </div>
+
+        <div class="games-grid">
+          <!-- Game 1: Count Objects -->
+          <div class="game-card-hub" data-game="count">
+            <div class="hub-card-icon">
+              <img src="./Objects/Fruits/PNG/plum0.png" alt="Count Objects">
+            </div>
+            <div class="hub-card-title">COUNT OBJECTS</div>
+            <div class="hub-card-badge">Numbers 1-10</div>
+          </div>
+
+          <!-- Game 2: Compare Numbers -->
+          <div class="game-card-hub" data-game="compare">
+            <div class="hub-card-icon">
+              <img src="./Number/Colored%20version/PNG/150.png" alt="Compare Numbers">
+            </div>
+            <div class="hub-card-title">COMPARE NUMBERS</div>
+            <div class="hub-card-badge">&lt; &nbsp; = &nbsp; &gt;</div>
+          </div>
+
+          <!-- Game 3: Addition -->
+          <div class="game-card-hub" data-game="add">
+            <div class="hub-card-icon">
+              <img src="./Objects/Sweets/PNG/cake%20slice0.png" alt="Addition">
+            </div>
+            <div class="hub-card-title">ADDITION</div>
+            <div class="hub-card-badge">Find the sum</div>
+          </div>
+
+          <!-- Game 4: Subtraction -->
+          <div class="game-card-hub" data-game="sub">
+            <div class="hub-card-icon">
+              <img src="./Objects/Animals/PNG/duck0.png" alt="Subtraction">
+            </div>
+            <div class="hub-card-title">SUBTRACTION</div>
+            <div class="hub-card-badge">Difference</div>
+          </div>
+
+          <!-- Game 5: Memory Cards -->
+          <div class="game-card-hub" data-game="memory">
+            <div class="hub-card-icon">
+              <img src="./Objects/Toys/PNG/drum0.png" alt="Memory Cards">
+            </div>
+            <div class="hub-card-title">MEMORY CARDS</div>
+            <div class="hub-card-badge">Find Pairs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================== -->
+      <!-- SCREEN 1: COUNT OBJECTS                             -->
+      <!-- =================================================== -->
+      <div id="count-view" class="game-view">
+        <div class="count-area">
+          <div id="count-tray" class="wicker-tray">
+            <div class="tray-inner-stitch"></div>
+          </div>
+          <div id="count-reveal-slot" class="reveal-slot">
+            <span class="placeholder-q">?</span>
+          </div>
+        </div>
+
+        <div id="count-choices-row" class="choices-row"></div>
+      </div>
+
+      <!-- =================================================== -->
+      <!-- SCREEN 2: COMPARE NUMBERS                           -->
+      <!-- =================================================== -->
+      <div id="compare-view" class="game-view">
+        <div class="compare-container">
+          <div id="compare-left-num" class="compare-num-box"></div>
+          <div id="compare-slot" class="compare-target-slot">?</div>
+          <div id="compare-right-num" class="compare-num-box"></div>
+        </div>
+
+        <div id="compare-choices-row" class="choices-row"></div>
+      </div>
+
+      <!-- =================================================== -->
+      <!-- SCREEN 3: ADDITION                                  -->
+      <!-- =================================================== -->
+      <div id="add-view" class="game-view">
+        <div id="add-equation-box" class="math-equation-box"></div>
+        <div id="add-choices-row" class="choices-row"></div>
+      </div>
+
+      <!-- =================================================== -->
+      <!-- SCREEN 4: SUBTRACTION                               -->
+      <!-- =================================================== -->
+      <div id="sub-view" class="game-view">
+        <div id="sub-equation-box" class="math-equation-box"></div>
+        <div id="sub-choices-row" class="choices-row"></div>
+      </div>
+
+      <!-- =================================================== -->
+      <!-- SCREEN 5: MEMORY CARDS                              -->
+      <!-- =================================================== -->
+      <div id="memory-view" class="game-view">
+        <div class="memory-wrapper">
+          <div id="memory-grid" class="memory-grid"></div>
+
+          <div class="memory-showcase">
+            <div id="showcase-inner" class="showcase-inner"></div>
+            <div id="showcase-label" class="showcase-label">Match a pair!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================== -->
+      <!-- VICTORY MODAL                                       -->
+      <!-- =================================================== -->
+      <div id="victory-modal" class="victory-modal">
+        <div class="victory-card">
+          <div class="victory-title">WELL DONE!</div>
+          <div class="victory-stars">
+            <svg class="victory-star"><use href="#icon-star-gold"/></svg>
+            <svg class="victory-star" style="transform: scale(1.3);"><use href="#icon-star-gold"/></svg>
+            <svg class="victory-star"><use href="#icon-star-gold"/></svg>
+          </div>
+          <p style="font-size: 26px; color: #694493;">You finished all the cards!</p>
+          <button id="btn-modal-next" class="btn-big-next">CONTINUE</button>
+        </div>
+      </div>
+
+      <!-- Mobile Portrait Rotate Device Prompt -->
+      <div id="rotate-prompt" class="rotate-prompt">
+        <div class="rotate-card">
+          <div class="rotate-phone-anim">
+            <svg viewBox="0 0 24 24" width="70" height="70" fill="#ff6b81">
+              <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
+            </svg>
+          </div>
+          <h2>Please Rotate Your Device</h2>
+          <p>Turn your phone sideways (Landscape) for the best kids math game experience!</p>
+          <img src="./Mascot/PNG%20Sequence/Happy/Happy_0.png" alt="Bunny" style="width: 140px; margin: 10px 0;">
+          <button id="btn-dismiss-rotate" class="btn-continue-portrait">Play in Portrait Anyway</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

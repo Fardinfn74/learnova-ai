@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Alphabet Learning Game Kit - Fun Educational Kids Game</title>
+  <meta name="description" content="Engaging educational alphabet game kit for kids. Match letters, build words, trace alphabets, find pictures, and learn phonics with a playful cat companion!">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- 16:9 Viewport Container -->
+    <div class="game-viewport bg-meadow" id="game-viewport">
+      
+      <!-- Particle FX Canvas (confetti & sparkles) -->
+      <canvas id="fx-canvas"></canvas>
+
+      <!-- TOP NAVBAR -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button class="ui-btn" id="btn-home" title="Go to Main Menu">
+            <img src="/UI%20Elements/Buttons/PNG/Home0.png" alt="Home">
+          </button>
+          <button class="round-control-btn" id="btn-sound" title="Toggle Sound FX">
+            🔊
+          </button>
+          <button class="round-control-btn" id="btn-music" title="Toggle Cheerful Music">
+            🎵
+          </button>
+        </div>
+
+        <div class="nav-right">
+          <!-- Star Reward Counter -->
+          <div class="star-badge" id="star-badge-container">
+            <img src="/UI%20Elements/Rewards/PNG/Gold%20Star0.png" alt="Star">
+            <span id="star-count-text">150</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================================
+           SCREEN 0: TITLE & MENU HUB
+           ========================================= -->
+      <section class="screen active" id="screen-menu">
+        <div class="title-banner-container">
+          <img class="kite-floating" src="/Object/PNG/kite.png" alt="Kite">
+          <div class="main-title-card">
+            <div class="title-alphabet" id="title-letters-row">
+              <!-- Dynamically populated letters: A L P H A B E T -->
+            </div>
+            <div class="title-learning-ribbon">LEARNING</div>
+            <div class="title-subtext">GAME KIT</div>
+          </div>
+        </div>
+
+        <!-- 6 Game Modes Grid -->
+        <div class="menu-grid">
+          <div class="mode-card" data-mode="match">
+            <span class="mode-card-badge">Pairs</span>
+            <img class="mode-card-icon" src="/Alphabet/Colored%20version/PNG/A0.png" alt="Match Letters">
+            <h3 class="mode-card-title">Match Letters</h3>
+            <p class="mode-card-desc">Connect letters with pictures</p>
+          </div>
+
+          <div class="mode-card" data-mode="find">
+            <span class="mode-card-badge">Night</span>
+            <img class="mode-card-icon" src="/Object/PNG/apple.png" alt="Find Letter">
+            <h3 class="mode-card-title">Find the Letter</h3>
+            <p class="mode-card-desc">Spot the picture starting with letter</p>
+          </div>
+
+          <div class="mode-card" data-mode="build">
+            <span class="mode-card-badge">Spelling</span>
+            <img class="mode-card-icon" src="/Object/PNG/whale.png" alt="Build Word">
+            <h3 class="mode-card-title">Build the Word</h3>
+            <p class="mode-card-desc">Drag letter tiles to spell words</p>
+          </div>
+
+          <div class="mode-card" data-mode="trace">
+            <span class="mode-card-badge">Beach</span>
+            <img class="mode-card-icon" src="/Alphabet/Colored%20version/PNG/B0.png" alt="Trace Letter">
+            <h3 class="mode-card-title">Trace the Letter</h3>
+            <p class="mode-card-desc">Draw with guided dotted lines</p>
+          </div>
+
+          <div class="mode-card" data-mode="missing">
+            <span class="mode-card-badge">Quiz</span>
+            <img class="mode-card-icon" src="/Object/PNG/orange.png" alt="Missing Letter">
+            <h3 class="mode-card-title">Missing Letter</h3>
+            <p class="mode-card-desc">Find the missing starting letter</p>
+          </div>
+
+          <div class="mode-card" data-mode="explorer">
+            <span class="mode-card-badge">A to Z</span>
+            <img class="mode-card-icon" src="/UI%20Elements/Rewards/PNG/Trophy0.png" alt="ABC Explorer">
+            <h3 class="mode-card-title">ABC Explorer</h3>
+            <p class="mode-card-desc">Phonics soundboard & flashcards</p>
+          </div>
+        </div>
+
+        <div class="cat-mascot-wrapper title-cat-pos" id="cat-menu"></div>
+      </section>
+
+      <!-- =========================================
+           SCREEN 1: MATCH LETTERS (Preview 2)
+           ========================================= -->
+      <section class="screen" id="screen-match">
+        <div class="header-ribbon">MATCH LETTERS</div>
+        <p class="header-prompt">Match the uppercase letters with the correct pictures</p>
+
+        <div class="match-game-container">
+          <!-- SVG layer for smooth connecting lines -->
+          <svg id="match-lines-svg"></svg>
+          
+          <div class="match-row" id="match-letters-row">
+            <!-- 6 letter cards A-F -->
+          </div>
+          <div class="match-row" id="match-objects-row">
+            <!-- 6 object cards shuffled -->
+          </div>
+        </div>
+
+        <div class="cat-mascot-wrapper match-cat-pos" id="cat-match"></div>
+
+        <div class="bottom-controls">
+          <button class="bottom-btn" id="btn-match-prev"><img src="/UI%20Elements/Buttons/PNG/Back0.png" alt="Back"></button>
+          <button class="bottom-btn" id="btn-match-replay"><img src="/UI%20Elements/Buttons/PNG/Replay0.png" alt="Replay"></button>
+          <button class="bottom-btn" id="btn-match-next"><img src="/UI%20Elements/Buttons/PNG/Next0.png" alt="Next"></button>
+        </div>
+      </section>
+
+      <!-- =========================================
+           SCREEN 2: FIND THE LETTER (Preview 3)
+           ========================================= -->
+      <section class="screen" id="screen-find">
+        <div class="header-ribbon">FIND THE LETTER</div>
+        <p class="header-prompt">Find the picture whose name begins with the letter shown</p>
+
+        <div class="find-game-container">
+          <div class="find-grid-card" id="find-grid">
+            <!-- 15 picture cards -->
+          </div>
+
+          <div class="find-target-panel">
+            <div class="find-target-card" id="find-target-card">
+              <img id="find-target-letter-img" src="/Alphabet/Colored%20version/PNG/A0.png" alt="Target Letter">
+            </div>
+            <div class="find-target-label">Find letter</div>
+          </div>
+        </div>
+
+        <div class="cat-mascot-wrapper find-cat-pos" id="cat-find"></div>
+
+        <div class="bottom-controls">
+          <button class="bottom-btn" id="btn-find-prev"><img src="/UI%20Elements/Buttons/PNG/Back0.png" alt="Back"></button>
+          <button class="bottom-btn" id="btn-find-replay"><img src="/UI%20Elements/Buttons/PNG/Replay0.png" alt="Replay"></button>
+          <button class="bottom-btn" id="btn-find-next"><img src="/UI%20Elements/Buttons/PNG/Next0.png" alt="Next"></button>
+        </div>
+      </section>
+
+      <!-- =========================================
+           SCREEN 3: BUILD THE WORD (Preview 4)
+           ========================================= -->
+      <section class="screen" id="screen-build">
+        <div class="header-ribbon">BUILD THE WORD</div>
+        <p class="header-prompt">Tap or drag the letters below to build the word for the picture</p>
+
+        <div class="build-game-container">
+          <div class="build-top-area">
+            <div class="build-object-card" id="build-object-card">
+              <img id="build-object-img" src="/Object/PNG/whale.png" alt="Object">
+              <div class="build-object-name" id="build-object-name">WHALE</div>
+            </div>
+
+            <!-- Empty / Filled Slots -->
+            <div class="build-slots-container" id="build-slots-container">
+              <!-- e.g. 5 slots for W H A L E -->
+            </div>
+          </div>
+
+          <!-- Alphabet Keyboard -->
+          <div class="build-keyboard" id="build-keyboard">
+            <!-- 2 rows A-M, N-Z -->
+          </div>
+        </div>
+
+        <div class="cat-mascot-wrapper build-cat-pos" id="cat-build"></div>
+
+        <div class="bottom-controls">
+          <button class="bottom-btn" id="btn-build-prev"><img src="/UI%20Elements/Buttons/PNG/Back0.png" alt="Back"></button>
+          <button class="bottom-btn" id="btn-build-replay"><img src="/UI%20Elements/Buttons/PNG/Replay0.png" alt="Replay"></button>
+          <button class="bottom-btn" id="btn-build-next"><img src="/UI%20Elements/Buttons/PNG/Next0.png" alt="Next"></button>
+        </div>
+      </section>
+
+      <!-- =========================================
+           SCREEN 4: TRACE THE LETTER (Preview 5)
+           ========================================= -->
+      <section class="screen" id="screen-trace">
+        <div class="header-ribbon">TRACE THE LETTER</div>
+        <p class="header-prompt">Trace the letter by following the dotted line</p>
+
+        <div class="trace-game-container">
+          <div class="trace-left-board">
+            <div class="trace-board-wrapper" id="trace-board-wrapper">
+              <div id="trace-svg-container"></div>
+              <canvas id="trace-draw-canvas" width="380" height="380"></canvas>
+            </div>
+            <div class="trace-actions">
+              <button class="action-pill-btn" id="btn-trace-clear">Clear 🔄</button>
+              <button class="action-pill-btn" id="btn-trace-hear">Hear Phonics 🔊</button>
+            </div>
+          </div>
+
+          <!-- Quick Letter Picker Palette -->
+          <div class="trace-alphabet-picker" id="trace-picker-grid">
+            <!-- A to Z letter tiles -->
+          </div>
+        </div>
+
+        <div class="cat-mascot-wrapper trace-cat-pos" id="cat-trace"></div>
+
+        <div class="bottom-controls">
+          <button class="bottom-btn" id="btn-trace-prev"><img src="/UI%20Elements/Buttons/PNG/Back0.png" alt="Back"></button>
+          <button class="bottom-btn" id="btn-trace-replay"><img src="/UI%20Elements/Buttons/PNG/Replay0.png" alt="Replay"></button>
+          <button class="bottom-btn" id="btn-trace-next"><img src="/UI%20Elements/Buttons/PNG/Next0.png" alt="Next"></button>
+        </div>
+      </section>
+
+      <!-- =========================================
+           SCREEN 5: MISSING LETTER (Preview 6)
+           ========================================= -->
+      <section class="screen" id="screen-missing">
+        <div class="header-ribbon">MISSING LETTER</div>
+        <p class="header-prompt">Look at the picture and choose the missing letter</p>
+
+        <div class="missing-game-container">
+          <div class="missing-left-panel">
+            <div class="missing-object-card">
+              <img id="missing-object-img" src="/Object/PNG/orange.png" alt="Missing Letter Object">
+            </div>
+            <div class="missing-word-display" id="missing-word-display">
+              <span class="missing-blank-slot" id="missing-slot">_</span>
+              <span class="missing-char-box" id="missing-word-tail">RANGE</span>
+            </div>
+          </div>
+
+          <div class="missing-alphabet-grid" id="missing-keyboard">
+            <!-- A-Z keyboard tiles -->
+          </div>
+        </div>
+
+        <div class="cat-mascot-wrapper missing-cat-pos" id="cat-missing"></div>
+
+        <div class="bottom-controls">
+          <button class="bottom-btn" id="btn-missing-prev"><img src="/UI%20Elements/Buttons/PNG/Back0.png" alt="Back"></button>
+          <button class="bottom-btn" id="btn-missing-replay"><img src="/UI%20Elements/Buttons/PNG/Replay0.png" alt="Replay"></button>
+          <button class="bottom-btn" id="btn-missing-next"><img src="/UI%20Elements/Buttons/PNG/Next0.png" alt="Next"></button>
+        </div>
+      </section>
+
+      <!-- =========================================
+           SCREEN 6: ABC EXPLORER & FLASHCARDS
+           ========================================= -->
+      <section class="screen" id="screen-explorer">
+        <div class="header-ribbon">ABC EXPLORER</div>
+        <p class="header-prompt">Tap any letter to hear its phonics, words, and bounce animation!</p>
+
+        <div class="explorer-container">
+          <div class="explorer-grid" id="explorer-grid">
+            <!-- A to Z cards -->
+          </div>
+        </div>
+      </section>
+
+      <!-- MODAL: LETTER EXPLORER DETAIL -->
+      <div class="modal-overlay" id="modal-explorer">
+        <div class="modal-content">
+          <button class="modal-close-btn" id="btn-modal-close">✕</button>
+          <div id="modal-letter-display">
+            <!-- Bouncing letter animation -->
+          </div>
+          <div class="modal-objects-row" id="modal-objects-container">
+            <!-- 2 objects with pronunciation -->
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: LEVEL VICTORY -->
+      <div class="modal-overlay" id="modal-victory">
+        <div class="modal-content victory-modal-content">
+          <img class="victory-trophy" src="/UI%20Elements/Rewards/PNG/Trophy0.png" alt="Trophy">
+          <h2 class="victory-title">HOORAY!</h2>
+          <p class="victory-sub" id="victory-message">You completed the challenge perfectly!</p>
+          <button class="action-pill-btn" id="btn-victory-continue" style="font-size: 24px; padding: 12px 36px;">Next Level ⭐</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
