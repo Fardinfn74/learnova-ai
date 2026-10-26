@@ -9,44 +9,34 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as CreatedByRouteImport } from './routes/created-by'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppVoiceRouteImport } from './routes/app.voice'
-import { Route as AppRoomsRouteImport } from './routes/app.rooms'
-import { Route as AppQuizRouteImport } from './routes/app.quiz'
-import { Route as AppPricingRouteImport } from './routes/app.pricing'
-import { Route as AppPodcastRouteImport } from './routes/app.podcast'
-import { Route as AppNotesRouteImport } from './routes/app.notes'
-import { Route as AppLibraryRouteImport } from './routes/app.library'
-import { Route as AppGamesRouteImport } from './routes/app.games'
-import { Route as AppDrawRouteImport } from './routes/app.draw'
-import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
-import { Route as AppCoursesRouteImport } from './routes/app.courses'
-import { Route as AppCodeLabRouteImport } from './routes/app.code-lab'
-import { Route as AppChatRouteImport } from './routes/app.chat'
-import { Route as AppBattleRouteImport } from './routes/app.battle'
-import { Route as AppBadgesRouteImport } from './routes/app.badges'
-import { Route as ApiVoiceRouteImport } from './routes/api/voice'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CreatedByRouteImport } from './routes/created-by'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as AppRoomRoomIdRouteImport } from './routes/app.room.$roomId'
+import { Route as ApiVoiceRouteImport } from './routes/api/voice'
+import { Route as AppBadgesRouteImport } from './routes/app.badges'
+import { Route as AppBattleRouteImport } from './routes/app.battle'
+import { Route as AppChatRouteImport } from './routes/app.chat'
+import { Route as AppCodeLabRouteImport } from './routes/app.code-lab'
+import { Route as AppCoursesRouteImport } from './routes/app.courses'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppDrawRouteImport } from './routes/app.draw'
+import { Route as AppGamesRouteImport } from './routes/app.games'
+import { Route as AppLibraryRouteImport } from './routes/app.library'
+import { Route as AppNotesRouteImport } from './routes/app.notes'
+import { Route as AppPodcastRouteImport } from './routes/app.podcast'
+import { Route as AppPricingRouteImport } from './routes/app.pricing'
+import { Route as AppQuizRouteImport } from './routes/app.quiz'
+import { Route as AppRoomsRouteImport } from './routes/app.rooms'
+import { Route as AppVoiceRouteImport } from './routes/app.voice'
 import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
+import { Route as AppRoomRoomIdRouteImport } from './routes/app.room.$roomId'
 
-const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CreatedByRoute = CreatedByRouteImport.update({
-  id: '/created-by',
-  path: '/created-by',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -54,89 +44,19 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppVoiceRoute = AppVoiceRouteImport.update({
-  id: '/voice',
-  path: '/voice',
-  getParentRoute: () => AppRoute,
+const CreatedByRoute = CreatedByRouteImport.update({
+  id: '/created-by',
+  path: '/created-by',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoomsRoute = AppRoomsRouteImport.update({
-  id: '/rooms',
-  path: '/rooms',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppQuizRoute = AppQuizRouteImport.update({
-  id: '/quiz',
-  path: '/quiz',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPricingRoute = AppPricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPodcastRoute = AppPodcastRouteImport.update({
-  id: '/podcast',
-  path: '/podcast',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppNotesRoute = AppNotesRouteImport.update({
-  id: '/notes',
-  path: '/notes',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppLibraryRoute = AppLibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGamesRoute = AppGamesRouteImport.update({
-  id: '/games',
-  path: '/games',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDrawRoute = AppDrawRouteImport.update({
-  id: '/draw',
-  path: '/draw',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCoursesRoute = AppCoursesRouteImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCodeLabRoute = AppCodeLabRouteImport.update({
-  id: '/code-lab',
-  path: '/code-lab',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppChatRoute = AppChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppBattleRoute = AppBattleRouteImport.update({
-  id: '/battle',
-  path: '/battle',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppBadgesRoute = AppBadgesRouteImport.update({
-  id: '/badges',
-  path: '/badges',
-  getParentRoute: () => AppRoute,
-} as any)
-const ApiVoiceRoute = ApiVoiceRouteImport.update({
-  id: '/api/voice',
-  path: '/api/voice',
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -144,15 +64,95 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoomRoomIdRoute = AppRoomRoomIdRouteImport.update({
-  id: '/room/$roomId',
-  path: '/room/$roomId',
+const ApiVoiceRoute = ApiVoiceRouteImport.update({
+  id: '/api/voice',
+  path: '/api/voice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppBadgesRoute = AppBadgesRouteImport.update({
+  id: '/badges',
+  path: '/badges',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBattleRoute = AppBattleRouteImport.update({
+  id: '/battle',
+  path: '/battle',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChatRoute = AppChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCodeLabRoute = AppCodeLabRouteImport.update({
+  id: '/code-lab',
+  path: '/code-lab',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCoursesRoute = AppCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDrawRoute = AppDrawRouteImport.update({
+  id: '/draw',
+  path: '/draw',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGamesRoute = AppGamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryRoute = AppLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotesRoute = AppNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPodcastRoute = AppPodcastRouteImport.update({
+  id: '/podcast',
+  path: '/podcast',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPricingRoute = AppPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuizRoute = AppQuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRoomsRoute = AppRoomsRouteImport.update({
+  id: '/rooms',
+  path: '/rooms',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVoiceRoute = AppVoiceRouteImport.update({
+  id: '/voice',
+  path: '/voice',
   getParentRoute: () => AppRoute,
 } as any)
 const ApiAdminStatsRoute = ApiAdminStatsRouteImport.update({
   id: '/api/admin/stats',
   path: '/api/admin/stats',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoomRoomIdRoute = AppRoomRoomIdRouteImport.update({
+  id: '/room/$roomId',
+  path: '/room/$roomId',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -328,25 +328,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/created-by': {
-      id: '/created-by'
-      path: '/created-by'
-      fullPath: '/created-by'
-      preLoaderRoute: typeof CreatedByRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -356,123 +342,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/voice': {
-      id: '/app/voice'
-      path: '/voice'
-      fullPath: '/app/voice'
-      preLoaderRoute: typeof AppVoiceRouteImport
-      parentRoute: typeof AppRoute
+    '/created-by': {
+      id: '/created-by'
+      path: '/created-by'
+      fullPath: '/created-by'
+      preLoaderRoute: typeof CreatedByRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/rooms': {
-      id: '/app/rooms'
-      path: '/rooms'
-      fullPath: '/app/rooms'
-      preLoaderRoute: typeof AppRoomsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/quiz': {
-      id: '/app/quiz'
-      path: '/quiz'
-      fullPath: '/app/quiz'
-      preLoaderRoute: typeof AppQuizRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/pricing': {
-      id: '/app/pricing'
-      path: '/pricing'
-      fullPath: '/app/pricing'
-      preLoaderRoute: typeof AppPricingRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/podcast': {
-      id: '/app/podcast'
-      path: '/podcast'
-      fullPath: '/app/podcast'
-      preLoaderRoute: typeof AppPodcastRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/notes': {
-      id: '/app/notes'
-      path: '/notes'
-      fullPath: '/app/notes'
-      preLoaderRoute: typeof AppNotesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/library': {
-      id: '/app/library'
-      path: '/library'
-      fullPath: '/app/library'
-      preLoaderRoute: typeof AppLibraryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/games': {
-      id: '/app/games'
-      path: '/games'
-      fullPath: '/app/games'
-      preLoaderRoute: typeof AppGamesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/draw': {
-      id: '/app/draw'
-      path: '/draw'
-      fullPath: '/app/draw'
-      preLoaderRoute: typeof AppDrawRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/dashboard': {
-      id: '/app/dashboard'
-      path: '/dashboard'
-      fullPath: '/app/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/courses': {
-      id: '/app/courses'
-      path: '/courses'
-      fullPath: '/app/courses'
-      preLoaderRoute: typeof AppCoursesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/code-lab': {
-      id: '/app/code-lab'
-      path: '/code-lab'
-      fullPath: '/app/code-lab'
-      preLoaderRoute: typeof AppCodeLabRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/chat': {
-      id: '/app/chat'
-      path: '/chat'
-      fullPath: '/app/chat'
-      preLoaderRoute: typeof AppChatRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/battle': {
-      id: '/app/battle'
-      path: '/battle'
-      fullPath: '/app/battle'
-      preLoaderRoute: typeof AppBattleRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/badges': {
-      id: '/app/badges'
-      path: '/badges'
-      fullPath: '/app/badges'
-      preLoaderRoute: typeof AppBadgesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/api/voice': {
-      id: '/api/voice'
-      path: '/api/voice'
-      fullPath: '/api/voice'
-      preLoaderRoute: typeof ApiVoiceRouteImport
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -482,11 +370,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/room/$roomId': {
-      id: '/app/room/$roomId'
-      path: '/room/$roomId'
-      fullPath: '/app/room/$roomId'
-      preLoaderRoute: typeof AppRoomRoomIdRouteImport
+    '/api/voice': {
+      id: '/api/voice'
+      path: '/api/voice'
+      fullPath: '/api/voice'
+      preLoaderRoute: typeof ApiVoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/badges': {
+      id: '/app/badges'
+      path: '/badges'
+      fullPath: '/app/badges'
+      preLoaderRoute: typeof AppBadgesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/battle': {
+      id: '/app/battle'
+      path: '/battle'
+      fullPath: '/app/battle'
+      preLoaderRoute: typeof AppBattleRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/chat': {
+      id: '/app/chat'
+      path: '/chat'
+      fullPath: '/app/chat'
+      preLoaderRoute: typeof AppChatRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/code-lab': {
+      id: '/app/code-lab'
+      path: '/code-lab'
+      fullPath: '/app/code-lab'
+      preLoaderRoute: typeof AppCodeLabRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/courses': {
+      id: '/app/courses'
+      path: '/courses'
+      fullPath: '/app/courses'
+      preLoaderRoute: typeof AppCoursesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/draw': {
+      id: '/app/draw'
+      path: '/draw'
+      fullPath: '/app/draw'
+      preLoaderRoute: typeof AppDrawRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/games': {
+      id: '/app/games'
+      path: '/games'
+      fullPath: '/app/games'
+      preLoaderRoute: typeof AppGamesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/library': {
+      id: '/app/library'
+      path: '/library'
+      fullPath: '/app/library'
+      preLoaderRoute: typeof AppLibraryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/notes': {
+      id: '/app/notes'
+      path: '/notes'
+      fullPath: '/app/notes'
+      preLoaderRoute: typeof AppNotesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/podcast': {
+      id: '/app/podcast'
+      path: '/podcast'
+      fullPath: '/app/podcast'
+      preLoaderRoute: typeof AppPodcastRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/pricing': {
+      id: '/app/pricing'
+      path: '/pricing'
+      fullPath: '/app/pricing'
+      preLoaderRoute: typeof AppPricingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/quiz': {
+      id: '/app/quiz'
+      path: '/quiz'
+      fullPath: '/app/quiz'
+      preLoaderRoute: typeof AppQuizRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/rooms': {
+      id: '/app/rooms'
+      path: '/rooms'
+      fullPath: '/app/rooms'
+      preLoaderRoute: typeof AppRoomsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/voice': {
+      id: '/app/voice'
+      path: '/voice'
+      fullPath: '/app/voice'
+      preLoaderRoute: typeof AppVoiceRouteImport
       parentRoute: typeof AppRoute
     }
     '/api/admin/stats': {
@@ -495,6 +488,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/stats'
       preLoaderRoute: typeof ApiAdminStatsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/room/$roomId': {
+      id: '/app/room/$roomId'
+      path: '/room/$roomId'
+      fullPath: '/app/room/$roomId'
+      preLoaderRoute: typeof AppRoomRoomIdRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
