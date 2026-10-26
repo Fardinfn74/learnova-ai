@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { GraduationCap, Play, CheckCircle, Trophy, Sparkles, Clock, BookOpen, Star, Award, ArrowRight, X, ChevronRight } from "lucide-react";
+import { GraduationCap, Play, CheckCircle, Trophy, Sparkles, Clock, BookOpen, Star, Award, ArrowRight, X, ChevronRight, Gamepad2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useServerFn } from "@tanstack/react-start";
 import { awardXp } from "@/lib/learnova.functions";
@@ -213,6 +213,29 @@ export function CoursesPage() {
             Gamified step-by-step courses engineered for kids (ages 3–15) and learners. Complete modules, answer quiz checks, and collect XP badges!
           </p>
         </div>
+      </div>
+
+      {/* Interactive 2D Games Suite Banner */}
+      <div className="glass rounded-3xl p-6 border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-amber-500 text-white grid place-items-center text-2xl shrink-0 shadow-md">
+            🎮
+          </div>
+          <div>
+            <h3 className="font-extrabold text-base md:text-lg text-foreground">
+              Looking for Interactive 2D Learning Games?
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Explore 15 interactive 2D STEM, alphabet kit, math counting, physics sandbox & code bot games!
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/app/games"
+          className="px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs shadow-md transition whitespace-nowrap flex items-center gap-2 self-stretch md:self-auto justify-center"
+        >
+          <Gamepad2 className="h-4 w-4" /> Go to 15 2D Games Suite <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
 
       {/* Courses Catalog */}

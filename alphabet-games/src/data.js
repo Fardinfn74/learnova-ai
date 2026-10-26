@@ -216,31 +216,31 @@ export const LETTERS = Object.keys(ALPHABET_DATA);
 
 export const ASSET_PATHS = {
   backgrounds: {
-    meadow: '/Backfround/PNG/1_Background.png',
-    beach: '/Backfround/PNG/2_Background.png',
-    night: '/Backfround/PNG/3_Background.png',
-    clouds: '/Backfround/PNG/4_Background.png'
+    meadow: './Backfround/PNG/1_Background.png',
+    beach: './Backfround/PNG/2_Background.png',
+    night: './Backfround/PNG/3_Background.png',
+    clouds: './Backfround/PNG/4_Background.png'
   },
   buttons: {
-    play: '/UI%20Elements/Buttons/PNG/Play0.png',
-    home: '/UI%20Elements/Buttons/PNG/Home0.png',
-    back: '/UI%20Elements/Buttons/PNG/Back0.png',
-    next: '/UI%20Elements/Buttons/PNG/Next0.png',
-    replay: '/UI%20Elements/Buttons/PNG/Replay0.png'
+    play: './UI%20Elements/Buttons/PNG/Play0.png',
+    home: './UI%20Elements/Buttons/PNG/Home0.png',
+    back: './UI%20Elements/Buttons/PNG/Back0.png',
+    next: './UI%20Elements/Buttons/PNG/Next0.png',
+    replay: './UI%20Elements/Buttons/PNG/Replay0.png'
   },
   rewards: {
-    goldStar: '/UI%20Elements/Rewards/PNG/Gold%20Star0.png',
-    silverStar: '/UI%20Elements/Rewards/PNG/Silver%20Star0.png',
-    bronzeStar: '/UI%20Elements/Rewards/PNG/Bronze%20Star0.png',
-    trophy: '/UI%20Elements/Rewards/PNG/Trophy0.png'
+    goldStar: './UI%20Elements/Rewards/PNG/Gold%20Star0.png',
+    silverStar: './UI%20Elements/Rewards/PNG/Silver%20Star0.png',
+    bronzeStar: './UI%20Elements/Rewards/PNG/Bronze%20Star0.png',
+    trophy: './UI%20Elements/Rewards/PNG/Trophy0.png'
   },
   effects: {
-    confetti: '/UI%20Elements/Effects/PNG/Confetti0.png',
-    shine: '/UI%20Elements/Effects/PNG/Shine0.png',
-    sparkles: '/UI%20Elements/Effects/PNG/Sparkles0.png'
+    confetti: './UI%20Elements/Effects/PNG/Confetti0.png',
+    shine: './UI%20Elements/Effects/PNG/Shine0.png',
+    sparkles: './UI%20Elements/Effects/PNG/Sparkles0.png'
   },
-  letterImg: (letter) => `/Alphabet/Colored%20version/PNG/${letter}0.png`,
-  letterOutlineSvg: (letter) => `/Alphabet/Outline%20version/SVG/${letter}0.svg`,
-  letterBounce: (letter, frame = 0) => `/Alphabet/Bounce%20(PNG%20sequence)/${letter}/${letter}_0000${frame}.png`,
-  objectImg: (filename) => `/Object/PNG/${encodeURIComponent(filename)}`
+  letterImg: (letter) => `./Alphabet/Colored%20version/PNG/${letter}0.png`,
+  letterOutlineSvg: (letter) => `./Alphabet/Outline%20version/SVG/${letter}0.svg`,
+  letterBounce: (letter, frame = 0) => `./Alphabet/Bounce%20(PNG%20sequence)/${letter}/${letter}_0000${frame}.png`,
+  objectImg: (filename) => `./Object/PNG/${encodeURIComponent(filename)}`
 };
