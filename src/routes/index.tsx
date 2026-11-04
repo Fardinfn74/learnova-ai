@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Nova } from "@/components/Nova";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Reveal } from "@/hooks/use-reveal";
-import { Sparkles, BookOpen, Code2, Trophy, Languages, FileText, Brain, MessageSquare, Target, Shield, Mic, Swords, Headphones, Users, Pencil, Menu, ChevronDown, GraduationCap, Gamepad2, CreditCard, Play } from "lucide-react";
+import { Sparkles, BookOpen, Code2, Trophy, Languages, FileText, Brain, MessageSquare, Target, Shield, Mic, Swords, Headphones, Users, Pencil, Menu, ChevronDown, GraduationCap, Gamepad2, CreditCard, Play, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { startDemoTrial } from "@/lib/demo-mode";
 
@@ -18,6 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 const features = [
+  { icon: Video, title: "EduTube Learning Hub", desc: "Verified educator lectures. Strict AI guardrails block cringe & NSFW." },
   { icon: GraduationCap, title: "Interactive Kids Courses", desc: "Abacus finger math, phonics, Bangla barnamala & coding." },
   { icon: Gamepad2, title: "Educational Mini-Games", desc: "Speed Math Sprint, word puzzles & mental flash challenges." },
   { icon: BookOpen, title: "Animated Library", desc: "Illustrated storybooks, workbooks & illustrated study notes." },
@@ -45,6 +46,7 @@ function Landing() {
     { label: "ABOUT", to: "/", hash: "about" },
     { label: "FEATURES", to: "/", hash: "features" },
     { label: "COURSES & GAMES", to: "/app/courses" },
+    { label: "EDUTUBE", to: "/app/videos" },
     { label: "PRICING", to: "/app/pricing" },
     { label: "DOCS", to: "/docs" },
     { label: "CREATED BY", to: "/created-by", color: "text-primary" },
