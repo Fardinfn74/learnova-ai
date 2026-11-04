@@ -30,28 +30,12 @@ const team = [
     whatsapp: "+8801814837020",
   },
   {
-    name: "Erina Siddiqua Eram",
-    role: "The Curator",
-    image: "/erina-eram.png",
-    about: ["Ux Coordinator", "Content Coordinator"],
-    instagram: "https://www.instagram.com/erina_eram_?igsh=aHdlamRwOHlzaXNv",
-    whatsapp: "+8801832302632",
-  },
-  {
     name: "Ramisa Anjum Simi",
     role: "The Analyst",
     image: "/ramisa-simi.png",
     about: ["Research", "Documentation"],
     instagram: "https://www.instagram.com/ramis_a_anjum?igsh=MWdiYjEzOW1ocDlydw==",
     whatsapp: "+8801870689173",
-  },
-  {
-    name: "Ramis Fariha Bhabna",
-    role: "The Strategist",
-    image: "/fariha-bhabna.png",
-    about: ["Testing", "Media Coordinator"],
-    instagram: "https://www.instagram.com/aint_your_batash?igsh=MTZwcG04aDMyZWFhdg==",
-    whatsapp: "",
   },
 ];
 

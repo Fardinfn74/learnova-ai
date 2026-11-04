@@ -30,6 +30,7 @@ import { Route as AppPodcastRouteImport } from './routes/app.podcast'
 import { Route as AppPricingRouteImport } from './routes/app.pricing'
 import { Route as AppQuizRouteImport } from './routes/app.quiz'
 import { Route as AppRoomsRouteImport } from './routes/app.rooms'
+import { Route as AppVideosRouteImport } from './routes/app.videos'
 import { Route as AppVoiceRouteImport } from './routes/app.voice'
 import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
 import { Route as AppRoomRoomIdRouteImport } from './routes/app.room.$roomId'
@@ -139,6 +140,11 @@ const AppRoomsRoute = AppRoomsRouteImport.update({
   path: '/rooms',
   getParentRoute: () => AppRoute,
 } as any)
+const AppVideosRoute = AppVideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppVoiceRoute = AppVoiceRouteImport.update({
   id: '/voice',
   path: '/voice',
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/app/pricing': typeof AppPricingRoute
   '/app/quiz': typeof AppQuizRoute
   '/app/rooms': typeof AppRoomsRoute
+  '/app/videos': typeof AppVideosRoute
   '/app/voice': typeof AppVoiceRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/app/room/$roomId': typeof AppRoomRoomIdRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/app/pricing': typeof AppPricingRoute
   '/app/quiz': typeof AppQuizRoute
   '/app/rooms': typeof AppRoomsRoute
+  '/app/videos': typeof AppVideosRoute
   '/app/voice': typeof AppVoiceRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/app/room/$roomId': typeof AppRoomRoomIdRoute
@@ -230,6 +238,7 @@ export interface FileRoutesById {
   '/app/pricing': typeof AppPricingRoute
   '/app/quiz': typeof AppQuizRoute
   '/app/rooms': typeof AppRoomsRoute
+  '/app/videos': typeof AppVideosRoute
   '/app/voice': typeof AppVoiceRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/app/room/$roomId': typeof AppRoomRoomIdRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/app/pricing'
     | '/app/quiz'
     | '/app/rooms'
+    | '/app/videos'
     | '/app/voice'
     | '/api/admin/stats'
     | '/app/room/$roomId'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/app/pricing'
     | '/app/quiz'
     | '/app/rooms'
+    | '/app/videos'
     | '/app/voice'
     | '/api/admin/stats'
     | '/app/room/$roomId'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/app/pricing'
     | '/app/quiz'
     | '/app/rooms'
+    | '/app/videos'
     | '/app/voice'
     | '/api/admin/stats'
     | '/app/room/$roomId'
@@ -475,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRoomsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/videos': {
+      id: '/app/videos'
+      path: '/videos'
+      fullPath: '/app/videos'
+      preLoaderRoute: typeof AppVideosRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/voice': {
       id: '/app/voice'
       path: '/voice'
@@ -514,6 +533,7 @@ interface AppRouteChildren {
   AppPricingRoute: typeof AppPricingRoute
   AppQuizRoute: typeof AppQuizRoute
   AppRoomsRoute: typeof AppRoomsRoute
+  AppVideosRoute: typeof AppVideosRoute
   AppVoiceRoute: typeof AppVoiceRoute
   AppRoomRoomIdRoute: typeof AppRoomRoomIdRoute
 }
@@ -533,6 +553,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPricingRoute: AppPricingRoute,
   AppQuizRoute: AppQuizRoute,
   AppRoomsRoute: AppRoomsRoute,
+  AppVideosRoute: AppVideosRoute,
   AppVoiceRoute: AppVoiceRoute,
   AppRoomRoomIdRoute: AppRoomRoomIdRoute,
 }

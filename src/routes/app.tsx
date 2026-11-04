@@ -6,7 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getProfile } from "@/lib/learnova.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Nova } from "@/components/Nova";
-import { MessageSquare, Target, FileText, Trophy, LogOut, Sparkles, Home, Mic, Code2, GraduationCap, BookOpen, Gamepad2, CreditCard, ShieldCheck } from "lucide-react";
+import { MessageSquare, Target, FileText, Trophy, LogOut, Sparkles, Home, Mic, Code2, GraduationCap, BookOpen, Gamepad2, CreditCard, ShieldCheck, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { isDemoActive, clearDemoTrial, getDemoDaysRemaining, DEMO_USER_PROFILE } from "@/lib/demo-mode";
@@ -55,6 +55,7 @@ function AppLayout() {
   const nav_items = [
     { to: "/app/dashboard", icon: Home, label: "Dashboard" },
     { to: "/app/courses", icon: GraduationCap, label: "Courses" },
+    { to: "/app/videos", icon: Video, label: "EduTube Videos" },
     { to: "/app/library", icon: BookOpen, label: "Library" },
     { to: "/app/games", icon: Gamepad2, label: "Games" },
     { to: "/app/chat", icon: MessageSquare, label: "Chat with Nova" },
