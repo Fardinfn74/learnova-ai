@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { summarizeNote, listNotes, getNote } from "@/lib/learn-ai.functions";
 import { awardXp } from "@/lib/learnova.functions";
 import { FileText, Loader2, Upload, ShieldCheck } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 import { toast } from "sonner";
 import { extractPdfText, PDF_LIMITS } from "@/lib/pdf-sandbox";
 
@@ -112,7 +112,7 @@ function NotesPage() {
             <div className="glass rounded-2xl p-6">
               <h2 className="text-xl font-bold gradient-text">{active.title}</h2>
               <div className="mt-3 prose prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown>{active.summary}</ReactMarkdown>
+                <Markdown>{active.summary}</Markdown>
               </div>
               <div className="mt-5">
                 <h3 className="font-semibold mb-2">📇 Flashcards</h3>
