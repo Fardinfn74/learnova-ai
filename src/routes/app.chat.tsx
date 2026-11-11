@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { listThreads, createThread, getThreadMessages, saveMessage, deleteThread, awardXp } from "@/lib/learnova.functions";
 import { Nova } from "@/components/Nova";
 import { Plus, Trash2, Send, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -231,7 +231,7 @@ function ChatWindow({ threadId, getMsgs, save, award, onNewChat, onOpenMenu }: {
                 )}>
                   {m.role === "user"
                     ? <p className="whitespace-pre-wrap">{text}</p>
-                    : <ReactMarkdown>{text}</ReactMarkdown>}
+                    : <Markdown>{text}</Markdown>}
                 </div>
               </div>
             );

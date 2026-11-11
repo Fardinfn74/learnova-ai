@@ -6,7 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { triggerNovaInRoom } from "@/lib/learn-ai.functions";
 import { Nova } from "@/components/Nova";
 import { Send, Users, User, Loader2, LogOut, Trash2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/room/$roomId")({ component: RoomPage });
@@ -194,7 +194,7 @@ function RoomPage() {
                   {isNova ? "Nova" : isMe ? "You" : (profiles[msg.user_id!] || "Student")}
                 </div>
                 <div className={cn("prose prose-sm max-w-none", isMe ? "text-primary-foreground prose-invert" : "dark:prose-invert")}>
-                  {isNova ? <ReactMarkdown>{msg.content}</ReactMarkdown> : <p className="whitespace-pre-wrap m-0">{msg.content}</p>}
+                  {isNova ? <Markdown>{msg.content}</Markdown> : <p className="whitespace-pre-wrap m-0">{msg.content}</p>}
                 </div>
               </div>
             </div>

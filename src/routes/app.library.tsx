@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { BookOpen, Search, Sparkles, Filter, Bookmark, Play, ArrowRight, X, CheckCircle, Volume2, FileText, Award, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/library")({
@@ -404,7 +404,7 @@ export function LibraryPage() {
             </div>
 
             <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none glass rounded-2xl p-6 bg-card/50 leading-relaxed max-h-[60vh] overflow-y-auto">
-              <ReactMarkdown>{selectedMaterial.content}</ReactMarkdown>
+              <Markdown>{selectedMaterial.content}</Markdown>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border/40">

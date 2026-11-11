@@ -1,6 +1,6 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createGroq } from "@ai-sdk/groq";
-import { generateText, type LanguageModel } from "ai";
+import { generateText, streamText, type LanguageModel } from "ai";
 import { AI_BUDGETS, type AiBudgetKey } from "./ai-budget";
 
 /* ── API key pools (comma-separated in .env) ───────────────────────── */
@@ -66,6 +66,8 @@ export function isRetryableError(error: unknown): boolean {
 
 /* ── Key-rotating fetch ─────────────────────────────────────────────── */
 
+let rotationCounter = 0;
+
 function createRotatingFetch(
   getAllKeys: () => string[],
   applyKey: (init: RequestInit | undefined, key: string) => RequestInit | undefined,
@@ -83,8 +85,11 @@ function createRotatingFetch(
           : (url as Request).url;
     let currentInit = init;
 
+    // start from a different key each request so load spreads across the whole pool
+    const offset = keys.length > 1 ? rotationCounter++ % keys.length : 0;
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const key = keys.length ? keys[attempt % keys.length] : "";
+      const key = keys.length ? keys[(attempt + offset) % keys.length] : "";
       if (key) {
         currentUrl = patchUrl ? patchUrl(currentUrl, key) : currentUrl;
         currentInit = applyKey(currentInit, key);
@@ -312,7 +317,7 @@ export async function generateTextWithFailover(
   let lastError: unknown;
   for (const { id, model } of chain) {
     try {
-      return await generateText({ ...request, model });
+      return await generateText({ ...request, model } as GenerateTextParams);
     } catch (error) {
       lastError = error;
       const msg = error instanceof Error ? error.message : String(error);
@@ -322,4 +327,72 @@ export async function generateTextWithFailover(
   }
 
   throw lastError instanceof Error ? lastError : new Error("All AI providers failed");
+}
+
+/* ── Streaming with provider failover ─────────────────────────────── */
+
+type StreamTextParams = Parameters<typeof streamText>[0];
+
+export type StreamStart = {
+  modelId: string;
+  /** Text deltas. Throws if the provider fails AFTER the first token (cannot fail over mid-answer). */
+  stream: AsyncGenerator<string, void, void>;
+};
+
+/**
+ * Tries each candidate until one produces its first token, then streams the rest from that one.
+ * A provider that errors (429 / quota / 5xx) or returns nothing before the first token is skipped.
+ */
+export async function streamAcrossChain(
+  chain: ModelCandidate[],
+  request: Omit<StreamTextParams, "model">,
+): Promise<StreamStart> {
+  if (!chain.length) {
+    throw new Error("Missing AI keys — set GROQ_API_KEY and/or GEMINI_API_KEY in .env");
+  }
+  let lastError: unknown;
+  for (const { id, model } of chain) {
+    const result = streamText({ ...request, model, maxRetries: 0, onError: () => {} } as StreamTextParams);
+    const parts = result.fullStream[Symbol.asyncIterator]();
+    try {
+      let first: string | null = null;
+      while (first === null) {
+        const next = await parts.next();
+        if (next.done) throw new Error("empty response from provider");
+        const part = next.value;
+        if (part.type === "error") throw part.error instanceof Error ? part.error : new Error(String(part.error));
+        if (part.type === "text-delta" && part.text) first = part.text;
+      }
+      const firstChunk = first;
+      async function* rest(): AsyncGenerator<string, void, void> {
+        yield firstChunk;
+        while (true) {
+          const next = await parts.next();
+          if (next.done) return;
+          const part = next.value;
+          if (part.type === "error") throw part.error instanceof Error ? part.error : new Error(String(part.error));
+          if (part.type === "text-delta" && part.text) yield part.text;
+        }
+      }
+      return { modelId: id, stream: rest() };
+    } catch (error) {
+      lastError = error;
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn(`[ai-gateway] ${id} failed before first token:`, msg);
+      if (!isRetryableError(error) && !/empty response/.test(msg)) throw error;
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("All AI providers failed");
+}
+
+export async function streamTextWithFailover(
+  options: Omit<StreamTextParams, "model"> & { tier?: ModelTier; budget?: AiBudgetKey },
+): Promise<StreamStart> {
+  const { tier = "quality", budget, ...rest } = options;
+  const caps = budget ? AI_BUDGETS[budget] : undefined;
+  return streamAcrossChain(getTextModelChain(tier), {
+    ...rest,
+    ...(caps?.maxOutputTokens != null ? { maxOutputTokens: caps.maxOutputTokens } : {}),
+    ...(caps?.temperature != null ? { temperature: caps.temperature } : {}),
+  });
 }

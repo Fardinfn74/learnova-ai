@@ -1,66 +1,43 @@
-import { createMiddleware } from '@tanstack/react-start'
-import { getRequest } from '@tanstack/react-start/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from './types'
+import { createMiddleware } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
+import { authenticateToken, bearerToken, supabaseAnonKey, supabaseUrl } from "./auth.server";
 
-export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
-  async ({ next }) => {
-    
-    const env = typeof process !== 'undefined' ? process.env : (globalThis as any).process?.env || {};
+/**
+ * Authenticates every server function call.
+ * context.supabase  -> client acting AS the user (RLS applies)
+ * context.userId    -> verified user id
+ * context.isAnonymous -> true for guest / judge-demo sessions
+ */
+export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(async ({ next }) => {
+  const url = supabaseUrl();
+  const key = supabaseAnonKey();
+  if (!url || !key) {
+    console.error("[Supabase] Missing SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY");
+    throw new Error("Server configuration error");
+  }
 
-    const rawUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL;
-    const rawKey = env.SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const request = getRequest();
+  if (!request?.headers) throw new Error("Unauthorized: No request headers available");
 
-    const SUPABASE_URL = rawUrl === 'undefined' ? undefined : rawUrl;
-    const SUPABASE_PUBLISHABLE_KEY = rawKey === 'undefined' ? undefined : rawKey;
+  const token = bearerToken(request);
+  if (!token) throw new Error("Unauthorized: No authorization header provided");
 
-    if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-      const missing = [
-        ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-        ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
-      ];
-      console.error(`[Supabase] Missing env variables: ${missing.join(', ')}.`);
-      throw new Error('Server configuration error');
-    }
-    
-    const request = getRequest();
+  const user = await authenticateToken(token);
+  if (!user) throw new Error("Unauthorized: Invalid token");
 
-    if (!request?.headers) {
-      throw new Error('Unauthorized: No request headers available');
-    }
+  const supabase = createClient<Database>(url, key, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 
-    const authHeader = request.headers.get('authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new Error('Unauthorized: No authorization header provided');
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    if (!token) {
-      throw new Error('Unauthorized: No token provided');
-    }
-
-    const supabase = createClient<Database>(
-      SUPABASE_URL as string,
-      SUPABASE_PUBLISHABLE_KEY as string,
-      {
-        global: { headers: { Authorization: `Bearer ${token}` } },
-        auth: { persistSession: false, autoRefreshToken: false },
-      }
-    );
-
-    const { data: userData, error } = await supabase.auth.getUser(token);
-
-    if (error || !userData?.user?.id) {
-      throw new Error('Unauthorized: Invalid token');
-    }
-
-    return next({
-      context: {
-        supabase,
-        userId: userData.user.id,
-        claims: { sub: userData.user.id },
-      },
-    });
-  },
-);
+  return next({
+    context: {
+      supabase,
+      userId: user.userId,
+      isAnonymous: user.isAnonymous,
+      claims: { sub: user.userId },
+    },
+  });
+});

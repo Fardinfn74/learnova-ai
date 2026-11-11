@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { Reveal } from "@/hooks/use-reveal";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "@/hooks/use-theme";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 import {
   Code2,
   Play,
@@ -289,7 +289,7 @@ function CodeLabPage() {
                            Thinking...
                         </div>
                       )}
-                      <ReactMarkdown>{novaFeedback || ""}</ReactMarkdown>
+                      <Markdown>{novaFeedback || ""}</Markdown>
                     </div>
                   </div>
                 </Reveal>

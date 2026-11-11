@@ -6,7 +6,7 @@ import { analyzeDrawing } from "@/lib/learn-ai.functions";
 import { awardXp } from "@/lib/learnova.functions";
 import { Nova } from "@/components/Nova";
 import { Pencil, Eraser, RotateCcw, Trash2, Send, Loader2, Palette } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -298,7 +298,7 @@ function DrawPage() {
 
             {result && !busy && (
               <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed">
-                <ReactMarkdown>{result}</ReactMarkdown>
+                <Markdown>{result}</Markdown>
               </div>
             )}
           </div>

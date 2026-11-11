@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useServerFn } from "@tanstack/react-start";
 import { awardXp } from "@/lib/learnova.functions";
 import { toast } from "sonner";
-import ReactMarkdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 
 export const Route = createFileRoute("/app/courses")({
   component: CoursesPage,
@@ -311,7 +311,7 @@ export function CoursesPage() {
                 {activeCourse.modules[currentModuleIdx].title}
               </h3>
               <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed">
-                <ReactMarkdown>{activeCourse.modules[currentModuleIdx].content}</ReactMarkdown>
+                <Markdown>{activeCourse.modules[currentModuleIdx].content}</Markdown>
               </div>
             </div>
 

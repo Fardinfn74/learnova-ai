@@ -1,53 +1,16 @@
-// Shared guards for public API routes (rate limit + auth + size).
-// Server-only utilities. Safe — no service role key.
-import { createClient } from "@supabase/supabase-js";
+// Shared guards for public API routes (auth + size). Server-only utilities.
+import { authenticateToken, bearerToken, type AuthedUser } from "@/lib/auth.server";
+export { moderate } from "@/lib/moderation-rules";
 
-const env = typeof process !== 'undefined' ? process.env : (globalThis as any).process?.env || {};
+const json = (status: number, body: unknown, headers: Record<string, string> = {}) =>
+  new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...headers } });
 
-const rawUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || "";
-const rawKey = env.SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
-
-const SUPABASE_URL = rawUrl === 'undefined' ? "" : rawUrl;
-const SUPABASE_ANON = rawKey === 'undefined' ? "" : rawKey;
-
-// Simple in-memory sliding-window rate limiter (per-key).
-// Note: per-instance only — fine as a first line of defense.
-const buckets = new Map<string, number[]>();
-export function rateLimit(key: string, limit: number, windowMs: number): { ok: boolean; retryAfter: number } {
-  const now = Date.now();
-  const arr = (buckets.get(key) || []).filter(t => now - t < windowMs);
-  if (arr.length >= limit) {
-    const retryAfter = Math.ceil((windowMs - (now - arr[0])) / 1000);
-    buckets.set(key, arr);
-    return { ok: false, retryAfter };
-  }
-  arr.push(now);
-  buckets.set(key, arr);
-  // opportunistic cleanup
-  if (buckets.size > 5000) {
-    for (const [k, v] of buckets) if (!v.length || now - v[v.length - 1] > windowMs * 4) buckets.delete(k);
-  }
-  return { ok: true, retryAfter: 0 };
-}
-
-export async function requireUser(request: Request): Promise<{ userId: string } | Response> {
-  const auth = request.headers.get("authorization") || request.headers.get("Authorization");
-  if (!auth || !auth.toLowerCase().startsWith("bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
-  }
-  const token = auth.slice(7).trim();
-  if (!token || token.length > 4096) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
-  }
-  if (!SUPABASE_URL || !SUPABASE_ANON) {
-    return new Response(JSON.stringify({ error: "Server not configured" }), { status: 500, headers: { "Content-Type": "application/json" } });
-  }
-  const client = createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { data, error } = await client.auth.getUser(token);
-  if (error || !data?.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
-  }
-  return { userId: data.user.id };
+export async function requireUser(request: Request): Promise<AuthedUser | Response> {
+  const token = bearerToken(request);
+  if (!token) return json(401, { error: "Unauthorized" });
+  const user = await authenticateToken(token);
+  if (!user) return json(401, { error: "Unauthorized" });
+  return user;
 }
 
 export function clientIp(request: Request): string {
@@ -82,25 +45,6 @@ export function validateMessages(messages: Array<{ role?: string; content?: stri
   }
   if (total > LIMITS.MAX_TOTAL_CHARS) return "conversation too long";
   return null;
-}
-
-// Lightweight content moderation: regex blocklist for clearly unsafe categories.
-// Returns category string if blocked, null if clean. AI system prompt is the
-// primary defense; this is a fast pre-filter + audit hook.
-const MOD_PATTERNS: Array<[string, RegExp]> = [
-  ["csam", /\b(child|minor|underage|loli|shota)\b.*\b(sex|porn|nude|nudes|naked|erotic)\b|\b(sex|porn|nude|erotic)\b.*\b(child|minor|underage|kid|kids)\b/i],
-  ["weapons", /\bhow\s+(to|do\s+i)\s+(make|build|synthes(is|ize)|manufacture)\s+(a\s+)?(bomb|explosive|ied|pipe\s*bomb|nerve\s*agent|sarin|ricin|anthrax|nuclear\s+(bomb|weapon)|bioweapon|chemical\s+weapon)/i],
-  ["self_harm", /\b(how\s+to|best\s+way\s+to|easiest\s+way\s+to)\s+(kill\s+myself|commit\s+suicide|end\s+my\s+life|hang\s+myself|overdose)/i],
-  ["malware", /\bwrite\s+(me\s+)?(a\s+)?(ransomware|keylogger|trojan|rootkit|botnet|stealer|rat\b)/i],
-  ["prompt_injection", /(ignore|disregard|forget)\s+(all\s+)?(previous|prior|above|your)\s+(instructions|prompts|rules)|reveal\s+(your\s+)?(system\s+)?prompt|you\s+are\s+now\s+(dan|developer\s+mode)/i],
-];
-
-export function moderate(text: string): { ok: boolean; category?: string } {
-  if (!text) return { ok: true };
-  for (const [cat, re] of MOD_PATTERNS) {
-    if (re.test(text)) return { ok: false, category: cat };
-  }
-  return { ok: true };
 }
 
 export function logEvent(kind: string, data: Record<string, unknown>) {
